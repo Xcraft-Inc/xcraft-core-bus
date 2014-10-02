@@ -16,6 +16,10 @@
     "type" : "file",
     "url" : "lib/xcraft-core-bus"
   },
+  "dependencies": {
+    "xcraft-core-log" : "0.1.0",
+    "xcraft-core-busclient": "0.1.0"
+  },
   "author": "Mathieu Schroeter & Samuel Loup",
   "license": "ISC",
   "devDependencies": {}
