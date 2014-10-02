@@ -83,7 +83,12 @@ exports.newMessage = function () {
   return require('./busMessage.js')();
 };
 
-exports.boot = function (zogConfig) {
+/**
+* Boot
+* @param busConfig Object with properties {host:, commanderPort:, notifierPort:}
+* @param commandHandlers Array of objects with properties [{path:, filePattern:}]
+*/
+exports.boot = function (busConfig, commandHandlers) {
   zogLog.verb ('Booting...');
 
   /* init all boot chain */
@@ -94,23 +99,26 @@ exports.boot = function (zogConfig) {
         token = genToken;
 
         /* load some command handler from modules/scripts locations */
-        loadCommandsRegistry (zogConfig.scriptsRoot, /zog.+\.js$/);
-        loadCommandsRegistry (zogConfig.libPkgRoot,  /pkg.+\.js$/);
+        Object.keys (commandHandlers).forEach (function (index) {
+          loadCommandsRegistry (commandHandlers[index].path,
+                                commandHandlers[index].pattern);
+        });
+
 
         callback (null, genToken);
       });
     },
 
     taskCommander: ['taskToken', function (callback, results) {
-      busCommander.start (zogConfig.bus.host,
-                          parseInt (zogConfig.bus.commanderPort),
+      busCommander.start (busConfig.host,
+                          parseInt (busConfig.commanderPort),
                           results.taskToken,
                           callback ());
     }],
 
     taskNotifier: function (callback) {
-      busNotifier.start (zogConfig.bus.host,
-                         parseInt (zogConfig.bus.notifierPort),
+      busNotifier.start (busConfig.host,
+                         parseInt (busConfig.notifierPort),
                          callback ());
     },
 
