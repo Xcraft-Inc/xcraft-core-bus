@@ -59,7 +59,7 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
     if (zogModules[fileName].hasOwnProperty ('busCommands')) {
       zogModules[fileName].busCommands ().forEach (function (cmd) {
         var commandName = fileName.replace (/\.js$/, '') + '.' + cmd.name;
-        busCommander.registerCommandHandler (commandName, cmd.handler);
+        busCommander.registerCommandHandler (commandName, cmd.desc, cmd.handler);
       });
     }
   });

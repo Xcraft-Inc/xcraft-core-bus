@@ -12,6 +12,10 @@ var commandsRegistry = {};
 
 exports.bus = sock;
 
+exports.getCommandsRegistry = function () {
+  return commandsRegistry;
+};
+
 exports.start = function (host, port, busToken, callback) {
   /* Save token */
   token = busToken;
@@ -34,16 +38,24 @@ exports.stop = function () {
   sock.close ();
 };
 
-exports.registerCommandHandler = function (commandKey, handlerFunction) {
+exports.registerCommandHandler = function (commandKey, commandDesc, handlerFunction) {
   zogLog.verb ('Command \'%s\' registered', commandKey);
-
-  commandsRegistry[commandKey] = handlerFunction;
+  var command = {
+    handler: handlerFunction,
+    desc   : commandDesc,
+    name   : commandKey
+  };
+  commandsRegistry[commandKey] = command;
 };
 
 exports.registerErrorHandler = function (errorHandler) {
   zogLog.verb ('Error handler registered');
-
-  commandsRegistry.error = errorHandler;
+  var command = {
+    handler: errorHandler,
+    desc   : 'default error handler',
+    name   : 'error'
+  };
+  commandsRegistry.error = command;
 };
 
 sock.on ('message', function (cmd, msg) {
@@ -67,5 +79,5 @@ sock.on ('message', function (cmd, msg) {
     return;
   }
 
-  commandsRegistry[cmd] (msg);
+  commandsRegistry[cmd].handler (msg);
 });
