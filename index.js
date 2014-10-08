@@ -84,10 +84,12 @@ exports.newMessage = function () {
 };
 
 /**
-* Boot
-* @param busConfig Object with properties {host:, commanderPort:, notifierPort:}
-* @param commandHandlers Array of objects with properties [{path:, filePattern:}]
-*/
+ * Boot
+ * @param {Object} busConfig - Object with properties
+ *                             {host:, commanderPort:, notifierPort:}
+ * @param {Object[]} commandHandlers - Array of objects with properties
+ *                                     [{path:, filePattern:}]
+ */
 exports.boot = function (busConfig, commandHandlers) {
   zogLog.verb ('Booting...');
 
