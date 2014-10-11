@@ -8,6 +8,7 @@ var zogLog       = require ('xcraft-core-log') (moduleName);
 var crypto       = require ('crypto');
 var busNotifier  = require ('./busNotifier.js');
 var busCommander = require ('./busCommander.js');
+var busConfig    = require ('xcraft-core-etc').loadConfigFileForPackage ('xcraft-core-bus');
 var EventEmitter = require ('events').EventEmitter;
 
 var bootReady = false;
@@ -85,12 +86,10 @@ exports.newMessage = function () {
 
 /**
  * Boot
- * @param {Object} busConfig - Object with properties
- *                             {host:, commanderPort:, notifierPort:}
  * @param {Object[]} commandHandlers - Array of objects with properties
  *                                     [{path:, filePattern:}]
  */
-exports.boot = function (busConfig, commandHandlers) {
+exports.boot = function (commandHandlers) {
   zogLog.verb ('Booting...');
 
   /* init all boot chain */
