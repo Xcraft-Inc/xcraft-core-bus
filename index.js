@@ -8,7 +8,7 @@ var zogLog       = require ('xcraft-core-log') (moduleName);
 var crypto       = require ('crypto');
 var busNotifier  = require ('./busNotifier.js');
 var busCommander = require ('./busCommander.js');
-var busConfig    = require ('xcraft-core-etc').loadConfigFileForPackage ('xcraft-core-bus');
+var busConfig    = require ('xcraft-core-etc').load ('xcraft-core-bus');
 var EventEmitter = require ('events').EventEmitter;
 
 var bootReady = false;
