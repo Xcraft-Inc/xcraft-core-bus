@@ -45,7 +45,7 @@ var generateBusToken = function (callbackDone) {
 };
 
 /**
- * Browse /scripts for zog modules, and register exported busCommands.
+ * Browse /scripts for zog modules, and register exported xcraftCommands.
  */
 var loadCommandsRegistry = function (modulePath, filterRegex) {
   var path  = require ('path');
@@ -57,8 +57,8 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
   zogModulesFiles.forEach (function (fileName) {
     zogModules[fileName] = require (path.join (modulePath, fileName));
 
-    if (zogModules[fileName].hasOwnProperty ('busCommands')) {
-      zogModules[fileName].busCommands ().forEach (function (cmd) {
+    if (zogModules[fileName].hasOwnProperty ('xcraftCommands')) {
+      zogModules[fileName].xcraftCommands ().forEach (function (cmd) {
         var commandName = fileName.replace (/\.js$/, '') + '.' + cmd.name;
         busCommander.registerCommandHandler (commandName, cmd.desc, cmd.handler);
       });
