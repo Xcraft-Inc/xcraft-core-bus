@@ -60,7 +60,7 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
     if (zogModules[fileName].hasOwnProperty ('xcraftCommands')) {
       zogModules[fileName].xcraftCommands ().forEach (function (cmd) {
         var commandName = fileName.replace (/\.js$/, '') + '.' + cmd.name;
-        busCommander.registerCommandHandler (commandName, cmd.desc, cmd.handler);
+        busCommander.registerCommandHandler (commandName, cmd.desc, cmd.params, cmd.handler);
       });
     }
   });
