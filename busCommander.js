@@ -49,6 +49,17 @@ exports.registerCommandHandler = function (commandKey, commandDesc, commandParam
   commandsRegistry[commandKey] = command;
 };
 
+
+exports.registerAutoconnectHandler = function (autoConnectHandler) {
+  zogLog.verb ('Autoconnect handler registered');
+  var command = {
+    handler: autoConnectHandler,
+    desc   : 'autoconnect',
+    name   : 'autoconnect'
+  };
+  commandsRegistry.autoconnect = command;
+};
+
 exports.registerErrorHandler = function (errorHandler) {
   zogLog.verb ('Error handler registered');
   var command = {
@@ -65,7 +76,7 @@ sock.on ('message', function (cmd, msg) {
   zogLog.verb ('begin command: %s', cmd);
   zogLog.verb ('command received: %s -> msg: %s', cmd, JSON.stringify (msg));
 
-  if (msg.token === token) {
+  if (msg.token === token || cmd === 'autoconnect') {
     if (!commandsRegistry.hasOwnProperty (cmd)) {
       var errorMessage  = {};
       errorMessage.data = msg;
