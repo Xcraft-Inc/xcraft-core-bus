@@ -60,6 +60,16 @@ exports.registerAutoconnectHandler = function (autoConnectHandler) {
   commandsRegistry.autoconnect = command;
 };
 
+exports.registerShutdownHandler = function (shutdownHandler) {
+  zogLog.verb ('Shutdown handler registered');
+  var command = {
+    handler: shutdownHandler,
+    desc   : 'shutdown',
+    name   : 'shutdown'
+  };
+  commandsRegistry.shutdown = command;
+};
+
 exports.registerErrorHandler = function (errorHandler) {
   zogLog.verb ('Error handler registered');
   var command = {
