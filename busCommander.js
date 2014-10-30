@@ -38,13 +38,14 @@ exports.stop = function () {
   sock.close ();
 };
 
-exports.registerCommandHandler = function (commandKey, commandDesc, commandParams, handlerFunction) {
+exports.registerCommandHandler = function (commandKey, commandDesc, commandParams, commandOptions, handlerFunction) {
   zogLog.verb ('Command \'%s\' registered', commandKey);
   var command = {
-    handler: handlerFunction,
-    desc   : commandDesc,
-    params : commandParams,
-    name   : commandKey
+    handler : handlerFunction,
+    desc    : commandDesc,
+    params  : commandParams,
+    name    : commandKey,
+    options : commandOptions
   };
   commandsRegistry[commandKey] = command;
 };
