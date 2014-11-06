@@ -51,11 +51,11 @@ var generateBusToken = function (callbackDone) {
  * Browse /scripts for zog modules, and register exported xcraftCommands.
  */
 var loadCommandsRegistry = function (modulePath, filterRegex) {
-  var path  = require ('path');
-  var zogFs = require ('xcraft-core-fs');
+  var path = require ('path');
+  var xFs  = require ('xcraft-core-fs');
 
   var zogModules = {};
-  var zogModulesFiles = zogFs.ls (modulePath, filterRegex);
+  var zogModulesFiles = xFs.ls (modulePath, filterRegex);
 
   zogModulesFiles.forEach (function (fileName) {
     zogModules[fileName] = require (path.join (modulePath, fileName));
