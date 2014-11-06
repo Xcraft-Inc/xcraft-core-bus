@@ -3,12 +3,15 @@
 
 var moduleName   = 'bus-boot';
 
-var async        = require ('async');
-var zogLog       = require ('xcraft-core-log') (moduleName);
-var crypto       = require ('crypto');
+var async  = require ('async');
+var crypto = require ('crypto');
+
 var busNotifier  = require ('./busNotifier.js');
 var busCommander = require ('./busCommander.js');
-var busConfig    = require ('xcraft-core-etc').load ('xcraft-core-bus');
+
+var xLog      = require ('xcraft-core-log') (moduleName);
+var busConfig = require ('xcraft-core-etc').load ('xcraft-core-bus');
+
 var EventEmitter = require ('events').EventEmitter;
 
 var bootReady = false;
@@ -33,7 +36,7 @@ var generateBusToken = function (callbackDone) {
     /* Handle error.
      * Most likely, entropy sources are drained.
      */
-    zogLog.err (ex);
+    xLog.err (ex);
     crypto.pseudoRandomBytes (256, function (ex, buf) {
       if (ex) {
         throw ex;
@@ -90,13 +93,13 @@ exports.newMessage = function () {
  *                                     [{path:, filePattern:}]
  */
 exports.boot = function (commandHandlers) {
-  zogLog.verb ('Booting...');
+  xLog.verb ('Booting...');
 
   /* init all boot chain */
   async.auto ({
     taskToken: function (callback) {
       generateBusToken (function (genToken) {
-        zogLog.verb ('Bus token created: %s', genToken);
+        xLog.verb ('Bus token created: %s', genToken);
         token = genToken;
 
         /* load some command handler from modules/scripts locations */
@@ -132,13 +135,13 @@ exports.boot = function (commandHandlers) {
     }]
   }, function (err) {
     if (err) {
-      zogLog.err (err);
+      xLog.err (err);
     }
   });
 };
 
 exports.stop = function () {
-  zogLog.verb ('Buses stop called');
+  xLog.verb ('Buses stop called');
   emitter.emit ('stop');
   busNotifier.stop ();
   busCommander.stop ();

@@ -2,8 +2,9 @@
 
 var moduleName = 'command-bus';
 
-var zogLog     = require ('xcraft-core-log') (moduleName);
-var axon       = require ('axon');
+var axon = require ('axon');
+
+var xLog = require ('xcraft-core-log') (moduleName);
 
 var sock             = axon.socket ('pull');
 var token            = 'invalid';
@@ -24,13 +25,13 @@ exports.start = function (host, port, busToken, callback) {
   var domain = require ('domain').create ();
 
   domain.on ('error', function (err) {
-    zogLog.err ('bus running on %s:%d, error: %s', host, port, err.message);
+    xLog.err ('bus running on %s:%d, error: %s', host, port, err.message);
   });
 
   /* Try binding in domain. */
   domain.run (function () {
     sock.bind (parseInt (port), host, callback);
-    zogLog.verb ('Bus started on %s:%d', host, port);
+    xLog.verb ('Bus started on %s:%d', host, port);
   });
 };
 
@@ -39,7 +40,7 @@ exports.stop = function () {
 };
 
 exports.registerCommandHandler = function (commandKey, commandDesc, commandParams, commandOptions, handlerFunction) {
-  zogLog.verb ('Command \'%s\' registered', commandKey);
+  xLog.verb ('Command \'%s\' registered', commandKey);
   var command = {
     handler : handlerFunction,
     desc    : commandDesc,
@@ -52,7 +53,7 @@ exports.registerCommandHandler = function (commandKey, commandDesc, commandParam
 
 
 exports.registerAutoconnectHandler = function (autoConnectHandler) {
-  zogLog.verb ('Autoconnect handler registered');
+  xLog.verb ('Autoconnect handler registered');
   var command = {
     handler: autoConnectHandler,
     desc   : 'autoconnect',
@@ -62,7 +63,7 @@ exports.registerAutoconnectHandler = function (autoConnectHandler) {
 };
 
 exports.registerShutdownHandler = function (shutdownHandler) {
-  zogLog.verb ('Shutdown handler registered');
+  xLog.verb ('Shutdown handler registered');
   var command = {
     handler: shutdownHandler,
     desc   : 'shutdown',
@@ -72,7 +73,7 @@ exports.registerShutdownHandler = function (shutdownHandler) {
 };
 
 exports.registerErrorHandler = function (errorHandler) {
-  zogLog.verb ('Error handler registered');
+  xLog.verb ('Error handler registered');
   var command = {
     handler: errorHandler,
     desc   : 'default error handler',
@@ -84,8 +85,8 @@ exports.registerErrorHandler = function (errorHandler) {
 sock.on ('message', function (cmd, msg) {
   var utils = require ('util');
 
-  zogLog.verb ('begin command: %s', cmd);
-  zogLog.verb ('command received: %s -> msg: %s', cmd, JSON.stringify (msg));
+  xLog.verb ('begin command: %s', cmd);
+  xLog.verb ('command received: %s -> msg: %s', cmd, JSON.stringify (msg));
 
   if (msg.token === token || cmd === 'autoconnect') {
     if (!commandsRegistry.hasOwnProperty (cmd)) {
@@ -98,7 +99,7 @@ sock.on ('message', function (cmd, msg) {
       msg = errorMessage;
     }
   } else {
-    zogLog.verb ('invalid token, command discarded');
+    xLog.verb ('invalid token, command discarded');
     return;
   }
 
