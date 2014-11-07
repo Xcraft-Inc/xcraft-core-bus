@@ -54,14 +54,14 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
   var path = require ('path');
   var xFs  = require ('xcraft-core-fs');
 
-  var zogModules = {};
-  var zogModulesFiles = xFs.ls (modulePath, filterRegex);
+  var modules = {};
+  var modulesFiles = xFs.ls (modulePath, filterRegex);
 
-  zogModulesFiles.forEach (function (fileName) {
-    zogModules[fileName] = require (path.join (modulePath, fileName));
+  modulesFiles.forEach (function (fileName) {
+    modules[fileName] = require (path.join (modulePath, fileName));
 
-    if (zogModules[fileName].hasOwnProperty ('xcraftCommands')) {
-      zogModules[fileName].xcraftCommands ().forEach (function (cmd) {
+    if (modules[fileName].hasOwnProperty ('xcraftCommands')) {
+      modules[fileName].xcraftCommands ().forEach (function (cmd) {
         var commandName = fileName.replace (/\.js$/, '') + '.' + cmd.name;
         busCommander.registerCommandHandler (commandName, cmd.desc, cmd.params, cmd.options, cmd.handler);
       });
