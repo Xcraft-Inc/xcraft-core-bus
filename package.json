@@ -12,14 +12,14 @@
     "commands",
     "notifier"
   ],
-  "repository" : {
-    "type" : "file",
-    "url" : "lib/xcraft-core-bus"
+  "repository": {
+    "type": "file",
+    "url": "lib/xcraft-core-bus"
   },
   "dependencies": {
-    "xcraft-core-log" : "0.1.0",
+    "axon": "^2.0.1",
     "xcraft-core-busclient": "0.1.0",
-    "axon": "2.0.x"
+    "xcraft-core-log": "0.1.0"
   },
   "author": "Mathieu Schroeter & Samuel Loup",
   "license": "ISC",
