@@ -20,7 +20,7 @@ var emitter   = new EventEmitter ();
 var notifier  = {};
 var commander = {};
 
-var generateBusToken = function (callbackDone) {
+var generateBusToken = function (callback) {
   var createKey = function (key) {
     var shasum = crypto.createHash ('sha1');
     shasum.update (key);
@@ -31,7 +31,7 @@ var generateBusToken = function (callbackDone) {
 
   try {
     buf = crypto.randomBytes (256);
-    callbackDone (createKey (buf));
+    callback (null, createKey (buf));
   } catch (ex) {
     /* Handle error.
      * Most likely, entropy sources are drained.
@@ -42,7 +42,7 @@ var generateBusToken = function (callbackDone) {
         throw ex;
       }
 
-      callbackDone (createKey (buf));
+      callback (null, createKey (buf));
     });
   }
 };
@@ -98,7 +98,7 @@ exports.boot = function (commandHandlers) {
   /* init all boot chain */
   async.auto ({
     taskToken: function (callback) {
-      generateBusToken (function (genToken) {
+      generateBusToken (function (err, genToken) {
         xLog.verb ('Bus token created: %s', genToken);
         token = genToken;
 
