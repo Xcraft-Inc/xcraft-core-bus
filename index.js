@@ -6,8 +6,8 @@ var moduleName   = 'bus-boot';
 var async  = require ('async');
 var crypto = require ('crypto');
 
-var busNotifier  = require ('./busNotifier.js');
-var busCommander = require ('./busCommander.js');
+var busNotifier  = require ('./lib/notifier.js');
+var busCommander = require ('./lib/commander.js');
 
 var xLog      = require ('xcraft-core-log') (moduleName);
 var busConfig = require ('xcraft-core-etc').load ('xcraft-core-bus');
@@ -84,7 +84,7 @@ exports.getToken = function () {
 };
 
 exports.newMessage = function () {
-  return require('./busMessage.js')();
+  return require ('./lib/message.js') ();
 };
 
 /**
