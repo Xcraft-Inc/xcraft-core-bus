@@ -63,7 +63,7 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
     if (modules[fileName].hasOwnProperty ('xcraftCommands')) {
       modules[fileName].xcraftCommands ().forEach (function (cmd) {
         var commandName = fileName.replace (/\.js$/, '') + '.' + cmd.name;
-        busCommander.registerCommandHandler (commandName, cmd.desc, cmd.params, cmd.options, cmd.handler);
+        busCommander.registerCommandHandler (commandName, cmd.desc, cmd.options, cmd.handler);
       });
     }
   });
