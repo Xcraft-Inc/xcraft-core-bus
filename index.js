@@ -89,8 +89,8 @@ exports.newMessage = function () {
 
 /**
  * Boot
- * @param {Object[]} commandHandlers - Array of objects with properties
- *                                     [{path:, filePattern:}]
+ *
+ * @param {Object[]} commandHandlers - List of modules.
  */
 exports.boot = function (commandHandlers) {
   xLog.verb ('Booting...');
