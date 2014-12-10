@@ -61,7 +61,22 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
     modules[fileName] = require (path.join (modulePath, fileName));
 
     if (modules[fileName].hasOwnProperty ('xcraftCommands')) {
-      modules[fileName].xcraftCommands ().forEach (function (cmd) {
+      var cmds = modules[fileName].xcraftCommands ();
+
+      var utils = require ('xcraft-core-utils');
+      var rc    = cmds.rc && utils.jsonFile2Json (cmds.rc);
+      var list  = [];
+
+      Object.keys (cmds.handlers).forEach (function (action) {
+        list.push ({
+          name:    action,
+          desc:    rc && rc[action] ? rc[action].desc    : '',
+          options: rc && rc[action] ? rc[action].options : {},
+          handler: cmds.handlers[action]
+        });
+      });
+
+      list.forEach (function (cmd) {
         var commandName = fileName.replace (/\.js$/, '') + '.' + cmd.name;
         busCommander.registerCommandHandler (commandName, cmd.desc, cmd.options, cmd.handler);
       });
