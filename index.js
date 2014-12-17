@@ -70,7 +70,7 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
       Object.keys (cmds.handlers).forEach (function (action) {
         list.push ({
           name:    action,
-          desc:    rc && rc[action] ? rc[action].desc    : '',
+          desc:    rc && rc[action] ? rc[action].desc    : null,
           options: rc && rc[action] ? rc[action].options : {},
           handler: cmds.handlers[action]
         });
