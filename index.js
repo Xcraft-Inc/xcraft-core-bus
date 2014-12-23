@@ -49,6 +49,7 @@ var generateBusToken = function (callback) {
 
 /**
  * Browse /scripts for zog modules, and register exported xcraftCommands.
+ * (Activities)
  */
 var loadCommandsRegistry = function (modulePath, filterRegex) {
   var path = require ('path');
@@ -78,7 +79,12 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
 
       list.forEach (function (cmd) {
         var commandName = fileName.replace (/\.js$/, '') + '.' + cmd.name;
-        busCommander.registerCommandHandler (commandName, cmd.desc, cmd.options, cmd.handler);
+        /* register commands as activity */
+        busCommander.registerCommandHandler (commandName,
+                                             cmd.desc,
+                                             cmd.options,
+                                             true,
+                                             cmd.handler);
       });
     }
   });
