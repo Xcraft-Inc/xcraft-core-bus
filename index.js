@@ -4,7 +4,7 @@
 var moduleName   = 'bus-boot';
 
 var async  = require ('async');
-var crypto = require ('crypto');
+var orcish = require ('./lib/orcish.js');
 
 var busNotifier  = require ('./lib/notifier.js');
 var busCommander = require ('./lib/commander.js');
@@ -19,33 +19,6 @@ var token     = '';
 var emitter   = new EventEmitter ();
 var notifier  = {};
 var commander = {};
-
-var generateBusToken = function (callback) {
-  var createKey = function (key) {
-    var shasum = crypto.createHash ('sha1');
-    shasum.update (key);
-    return shasum.digest ('hex');
-  };
-
-  var buf = null;
-
-  try {
-    buf = crypto.randomBytes (256);
-    callback (null, createKey (buf));
-  } catch (ex) {
-    /* Handle error.
-     * Most likely, entropy sources are drained.
-     */
-    xLog.err (ex);
-    crypto.pseudoRandomBytes (256, function (ex, buf) {
-      if (ex) {
-        throw ex;
-      }
-
-      callback (null, createKey (buf));
-    });
-  }
-};
 
 /**
  * Browse /scripts for zog modules, and register exported xcraftCommands.
@@ -104,6 +77,10 @@ exports.getToken = function () {
   return token;
 };
 
+exports.generateOrcName = function () {
+  return orcish.generateOrcName ();
+};
+
 exports.newMessage = function () {
   return require ('./lib/message.js') ();
 };
@@ -119,8 +96,8 @@ exports.boot = function (commandHandlers) {
   /* init all boot chain */
   async.auto ({
     taskToken: function (callback) {
-      generateBusToken (function (err, genToken) {
-        xLog.verb ('Bus token created: %s', genToken);
+      orcish.generateGreatHall (function (err, genToken) {
+        xLog.info ('Great Hall created: %s', genToken);
         token = genToken;
 
         /* load some command handler from modules/scripts locations */
