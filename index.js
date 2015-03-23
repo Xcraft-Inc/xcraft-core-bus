@@ -106,7 +106,6 @@ exports.boot = function (commandHandlers) {
                                 commandHandlers[index].pattern);
         });
 
-
         callback (null, genToken);
       });
     },
