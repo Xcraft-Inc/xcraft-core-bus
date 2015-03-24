@@ -142,11 +142,10 @@ exports.stop = function () {
   var msg = exports.newMessage ();
   msg.data = 'you lose!';
   notifier.send ('gameover', msg);
-  
+
   emitter.emit ('stop');
   busCommander.stop ();
   busNotifier.stop ();
-
 };
 
 /**
