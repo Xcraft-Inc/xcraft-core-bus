@@ -140,6 +140,9 @@ exports.boot = function (commandHandlers) {
 exports.stop = function () {
   xLog.verb ('Buses stop called');
   emitter.emit ('stop');
+  var msg = exports.newMessage ();
+  msg.data = 'you lose!';
+  notifier.send ('gameover', msg);
   busNotifier.stop ();
   busCommander.stop ();
 };
