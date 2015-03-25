@@ -114,7 +114,6 @@ exports.boot = function (commandHandlers) {
       busCommander.start (busConfig.host,
                           parseInt (busConfig.commanderPort),
                           results.taskToken,
-                          busConfig.namespaceServer,
                           callback ());
     }],
 
