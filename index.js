@@ -173,9 +173,4 @@ exports.xcraftConfig = [{
     return /^[0-9]{1,}$/.test (value);
   },
   default: '9200'
-}, {
-  type: 'input',
-  name: 'namespaceServer',
-  message: 'namespace for server broadcast events',
-  default: 'greathall'
 }];
