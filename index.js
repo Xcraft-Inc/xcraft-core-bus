@@ -171,5 +171,5 @@ exports.xcraftConfig = [{
   validate: function (value) {
     return /^[0-9]{1,}$/.test (value);
   },
-  default: '9200'
+  default: '9300'
 }];
