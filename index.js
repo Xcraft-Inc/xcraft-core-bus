@@ -81,10 +81,6 @@ exports.generateOrcName = function () {
   return orcish.generateOrcName ();
 };
 
-exports.newMessage = function () {
-  return require ('./lib/message.js') ();
-};
-
 /**
  * Boot
  *
@@ -139,8 +135,9 @@ exports.boot = function (commandHandlers) {
 
 exports.stop = function () {
   xLog.verb ('Buses stop called, sending GameOver...');
-  var msg = exports.newMessage ();
-  msg.data = 'you lose!';
+
+  var busClient = require ('xcraft-core-busclient').global;
+  var msg = busClient.newMessage ();
   notifier.send ('gameover', msg);
 
   emitter.emit ('stop');
