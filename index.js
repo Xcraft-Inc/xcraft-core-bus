@@ -1,7 +1,7 @@
 /* Buses Booting */
 'use strict';
 
-var moduleName   = 'bus-boot';
+var moduleName   = 'bus';
 
 var async  = require ('async');
 var orcish = require ('./lib/orcish.js');
