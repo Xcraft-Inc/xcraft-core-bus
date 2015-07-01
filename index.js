@@ -136,7 +136,7 @@ exports.boot = function (commandHandlers) {
 exports.stop = function () {
   xLog.verb ('Buses stop called, sending GameOver...');
 
-  var busClient = require ('xcraft-core-busclient').global;
+  var busClient = require ('xcraft-core-busclient').getGlobal ();
   var msg = busClient.newMessage ();
   notifier.send ('gameover', msg);
 
