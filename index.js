@@ -9,7 +9,7 @@ var orcish = require ('./lib/orcish.js');
 var busNotifier  = require ('./lib/notifier.js');
 var busCommander = require ('./lib/commander.js');
 
-var xLog      = require ('xcraft-core-log') (moduleName);
+var xLog      = require ('xcraft-core-log') (moduleName, true);
 var busConfig = require ('xcraft-core-etc').load ('xcraft-core-bus');
 
 var EventEmitter = require ('events').EventEmitter;
