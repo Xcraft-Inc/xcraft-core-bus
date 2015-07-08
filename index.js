@@ -38,7 +38,7 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
       var cmds = modules[fileName].xcraftCommands ();
 
       var utils = require ('xcraft-core-utils');
-      var rc    = cmds.rc && utils.jsonFile2Json (cmds.rc);
+      var rc    = cmds.rc && utils.json.fromFile (cmds.rc);
       var list  = [];
 
       Object.keys (cmds.handlers).forEach (function (action) {
