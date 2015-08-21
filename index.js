@@ -82,7 +82,7 @@ exports.generateOrcName = function () {
 };
 
 /**
- * Boot
+ * Boot buses.
  *
  * @param {Object[]} commandHandlers - List of modules.
  */
