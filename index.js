@@ -125,6 +125,15 @@ exports.boot = function (commandHandlers) {
       bootReady = true;
       emitter.emit ('ready');
       callback ();
+    }],
+
+    taskStart: ['taskReady', (callback) => {
+      xLog.verb ('starting services...');
+      const registry = busCommander.getCommandsRegistry ();
+      Object.keys (registry)
+            .filter (cmd => /\.__start__$/.test (cmd))
+            .forEach (cmd => registry[cmd].handler ());
+      callback ();
     }]
   }, function (err) {
     if (err) {
@@ -134,12 +143,14 @@ exports.boot = function (commandHandlers) {
 };
 
 exports.stop = function () {
-  xLog.verb ('Buses stop called, sending GameOver...');
-
+  xLog.verb ('Buses stop called, stopping services and sending GameOver...');
+  const registry = busCommander.getCommandsRegistry ();
+  Object.keys (registry)
+        .filter (cmd => /\.__stop__$/.test (cmd))
+        .forEach (cmd => registry[cmd].handler ());
   var busClient = require ('xcraft-core-busclient').getGlobal ();
   var msg = busClient.newMessage ();
   notifier.send ('gameover', msg);
-
   emitter.emit ('stop');
   busCommander.stop ();
   busNotifier.stop ();
