@@ -3,7 +3,7 @@
 
 var moduleName   = 'bus';
 
-var async  = require ('async');
+var watt   = require ('watt');
 var orcish = require ('./lib/orcish.js');
 
 var busNotifier  = require ('./lib/notifier.js');
@@ -85,62 +85,48 @@ exports.generateOrcName = function () {
  * Boot buses.
  *
  * @param {Object[]} commandHandlers - List of modules.
+ * @param {function(err)} next
  */
-exports.boot = function (commandHandlers) {
+exports.boot = watt (function * (commandHandlers, next) {
   xLog.verb ('Booting...');
 
-  /* init all boot chain */
-  async.auto ({
-    taskToken: function (callback) {
-      orcish.generateGreatHall (function (err, genToken) {
-        xLog.info ('Great Hall created: %s', genToken);
-        token = genToken;
+  /* Generate the token */
+  const genToken = yield orcish.generateGreatHall (next);
+  xLog.info ('Great Hall created: %s', genToken);
+  token = genToken;
 
-        /* load some command handler from modules/scripts locations */
-        Object.keys (commandHandlers).forEach (function (index) {
-          loadCommandsRegistry (commandHandlers[index].path,
-                                commandHandlers[index].pattern);
-        });
-
-        callback (null, genToken);
-      });
-    },
-
-    taskCommander: ['taskToken', function (callback, results) {
-      busCommander.start (busConfig.host,
-                          parseInt (busConfig.commanderPort),
-                          results.taskToken,
-                          callback ());
-    }],
-
-    taskNotifier: function (callback) {
-      busNotifier.start (busConfig.host,
-                         parseInt (busConfig.notifierPort),
-                         callback ());
-    },
-
-    taskReady: ['taskCommander', 'taskNotifier', function (callback) {
-      notifier = busNotifier.bus;
-      commander = busCommander;
-      bootReady = true;
-      emitter.emit ('ready');
-      callback ();
-    }],
-
-    taskStart: ['taskReady', (callback) => {
-      xLog.verb ('starting services...');
-      const registry = busCommander.getCommandsRegistry ();
-      Object.keys (registry)
-            .filter (cmd => /\.__start__$/.test (cmd))
-            .forEach (cmd => registry[cmd].handler ());
-      callback ();
-    }]
-  }, function (err) {
-    if (err) {
-      xLog.err (err);
-    }
+  /* load some command handler from modules/scripts locations */
+  Object.keys (commandHandlers).forEach (function (index) {
+    loadCommandsRegistry (commandHandlers[index].path,
+                          commandHandlers[index].pattern);
   });
-};
+
+  /* Start the bus commander */
+  busCommander.start (busConfig.host,
+                      parseInt (busConfig.commanderPort),
+                      genToken,
+                      next.parallel);
+
+  /* Start the bus notifier */
+  busNotifier.start (busConfig.host,
+                     parseInt (busConfig.notifierPort),
+                     next.parallel);
+
+  yield next.sync ();
+
+  notifier  = busNotifier.bus;
+  commander = busCommander;
+  bootReady = true;
+  emitter.emit ('ready');
+
+  /* Execute all __start__ handlers */
+  xLog.verb ('starting services...');
+  const registry = busCommander.getCommandsRegistry ();
+  Object
+    .keys (registry)
+    .filter (cmd => /\.__start__$/.test (cmd))
+    .forEach (cmd => registry[cmd].handler ());
+});
 
 exports.stop = function () {
   xLog.verb ('Buses stop called, stopping services and sending GameOver...');
