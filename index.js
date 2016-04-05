@@ -22,7 +22,7 @@ var commander = {};
 
 /**
  * Browse /scripts for zog modules, and register exported xcraftCommands.
- * (Activities)
+ * (Activities).
  */
 var loadCommandsRegistry = function (modulePath, filterRegex) {
   var path = require ('path');
@@ -130,13 +130,17 @@ exports.boot = watt (function * (commandHandlers, next) {
 
 exports.stop = function () {
   xLog.verb ('Buses stop called, stopping services and sending GameOver...');
+
+  /* Execute all __stop__ handlers */
   const registry = busCommander.getCommandsRegistry ();
   Object.keys (registry)
         .filter (cmd => /\.__stop__$/.test (cmd))
         .forEach (cmd => registry[cmd].handler ());
+
   var busClient = require ('xcraft-core-busclient').getGlobal ();
   var msg = busClient.newMessage ();
   notifier.send ('gameover', msg);
+
   emitter.emit ('stop');
   busCommander.stop ();
   busNotifier.stop ();
