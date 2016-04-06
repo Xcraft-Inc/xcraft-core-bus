@@ -9,7 +9,7 @@ var orcish = require ('./lib/orcish.js');
 var busNotifier  = require ('./lib/notifier.js');
 var busCommander = require ('./lib/commander.js');
 
-var xLog      = require ('xcraft-core-log') (moduleName, true);
+var xLog      = require ('xcraft-core-log') (moduleName, null);
 var busConfig = require ('xcraft-core-etc') ().load ('xcraft-core-bus');
 
 var EventEmitter = require ('events').EventEmitter;
@@ -37,16 +37,16 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
     if (modules[fileName].hasOwnProperty ('xcraftCommands')) {
       var cmds = modules[fileName].xcraftCommands ();
 
-      var utils = require ('xcraft-core-utils');
-      var rc    = cmds.rc && utils.json.fromFile (cmds.rc);
+      var rc    = cmds.rc || {};
       var list  = [];
 
       Object.keys (cmds.handlers).forEach (function (action) {
         list.push ({
-          name:    action,
-          desc:    rc && rc[action] ? rc[action].desc    : null,
-          options: rc && rc[action] ? rc[action].options : {},
-          handler: cmds.handlers[action]
+          name:     action,
+          desc:     rc[action] && rc[action].desc     || null,
+          options:  rc[action] && rc[action].options  || {},
+          parallel: rc[action] && rc[action].parallel || false,
+          handler:  cmds.handlers[action]
         });
       });
 
@@ -57,6 +57,7 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
                                              cmd.desc,
                                              cmd.options,
                                              true,
+                                             cmd.parallel,
                                              cmd.handler);
       });
     }
