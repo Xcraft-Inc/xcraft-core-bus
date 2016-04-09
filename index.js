@@ -122,7 +122,7 @@ exports.boot = watt (function * (commandHandlers, next) {
 
   /* Execute all __start__ handlers */
   xLog.verb ('starting services...');
-  const registry = busCommander.getCommandsRegistry ();
+  const registry = busCommander.getRegistry ();
   Object
     .keys (registry)
     .filter (cmd => /\.__start__$/.test (cmd))
@@ -133,7 +133,7 @@ exports.stop = function () {
   xLog.verb ('Buses stop called, stopping services and sending GameOver...');
 
   /* Execute all __stop__ handlers */
-  const registry = busCommander.getCommandsRegistry ();
+  const registry = busCommander.getRegistry ();
   Object.keys (registry)
         .filter (cmd => /\.__stop__$/.test (cmd))
         .forEach (cmd => registry[cmd].handler ());
