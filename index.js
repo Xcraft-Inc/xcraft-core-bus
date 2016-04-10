@@ -134,9 +134,10 @@ exports.stop = function () {
 
   /* Execute all __stop__ handlers */
   const registry = busCommander.getRegistry ();
-  Object.keys (registry)
-        .filter (cmd => /\.__stop__$/.test (cmd))
-        .forEach (cmd => registry[cmd].handler ());
+  Object
+    .keys (registry)
+    .filter (cmd => /\.__stop__$/.test (cmd))
+    .forEach (cmd => registry[cmd].handler ());
 
   var busClient = require ('xcraft-core-busclient').getGlobal ();
   var msg = busClient.newMessage ();
