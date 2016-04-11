@@ -106,12 +106,12 @@ exports.boot = watt (function * (commandHandlers, next) {
   busCommander.start (busConfig.host,
                       parseInt (busConfig.commanderPort),
                       genToken,
-                      next.parallel);
+                      next.parallel ());
 
   /* Start the bus notifier */
   busNotifier.start (busConfig.host,
                      parseInt (busConfig.notifierPort),
-                     next.parallel);
+                     next.parallel ());
 
   yield next.sync ();
 
