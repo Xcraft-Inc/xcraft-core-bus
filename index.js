@@ -120,24 +120,24 @@ exports.boot = watt (function * (commandHandlers, next) {
   bootReady = true;
   emitter.emit ('ready');
 
-  /* Execute all __start__ handlers */
+  /* FIXME: Execute all __start__ handlers
   xLog.verb ('starting services...');
   const registry = busCommander.getRegistry ();
   Object
     .keys (registry)
     .filter (cmd => /\.__start__$/.test (cmd))
-    .forEach (cmd => registry[cmd].handler ());
+    .forEach (cmd => busCommander._runCommand (cmd));*/
 });
 
 exports.stop = function () {
   xLog.verb ('Buses stop called, stopping services and sending GameOver...');
 
-  /* Execute all __stop__ handlers */
+  /* FIXME: Execute all __stop__ handlers
   const registry = busCommander.getRegistry ();
   Object
     .keys (registry)
     .filter (cmd => /\.__stop__$/.test (cmd))
-    .forEach (cmd => registry[cmd].handler ());
+    .forEach (cmd => busCommander._runCommand (cmd));*/
 
   var busClient = require ('xcraft-core-busclient').getGlobal ();
   var msg = busClient.newMessage ();
