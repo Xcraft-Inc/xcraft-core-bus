@@ -20,6 +20,19 @@ var emitter   = new EventEmitter ();
 var notifier  = {};
 var commander = {};
 
+
+function registerCommand (name, rc, handler) {
+  /* register commands as activity */
+  busCommander.registerCommandHandler (
+    name,
+    rc && rc.desc     || null,
+    rc && rc.options  || {},
+    true,
+    rc && rc.parallel || false,
+    handler
+  );
+}
+
 /**
  * Browse /scripts for zog modules, and register exported xcraftCommands.
  * (Activities).
@@ -35,30 +48,12 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
     modules[fileName] = require (path.join (modulePath, fileName));
 
     if (modules[fileName].hasOwnProperty ('xcraftCommands')) {
-      var cmds = modules[fileName].xcraftCommands ();
+      const cmds = modules[fileName].xcraftCommands ();
+      const rc   = cmds.rc || {};
 
-      var rc    = cmds.rc || {};
-      var list  = [];
-
-      Object.keys (cmds.handlers).forEach (function (action) {
-        list.push ({
-          name:     action,
-          desc:     rc[action] && rc[action].desc     || null,
-          options:  rc[action] && rc[action].options  || {},
-          parallel: rc[action] && rc[action].parallel || false,
-          handler:  cmds.handlers[action]
-        });
-      });
-
-      list.forEach (function (cmd) {
-        var commandName = fileName.replace (/\.js$/, '') + '.' + cmd.name;
-        /* register commands as activity */
-        busCommander.registerCommandHandler (commandName,
-                                             cmd.desc,
-                                             cmd.options,
-                                             true,
-                                             cmd.parallel,
-                                             cmd.handler);
+      Object.keys (cmds.handlers).forEach ((action) => {
+        const name = fileName.replace (/\.js$/, '') + '.' + action;
+        registerCommand (name, rc[action], cmds.handlers[action]);
       });
     }
   });
