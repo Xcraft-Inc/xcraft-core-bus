@@ -1,24 +1,26 @@
-/* Buses Booting */
 'use strict';
 
-var moduleName   = 'bus';
+const moduleName = 'bus';
 
-var watt   = require ('watt');
-var orcish = require ('./lib/orcish.js');
+const path   = require ('path');
+const watt   = require ('watt');
+const orcish = require ('./lib/orcish.js');
 
-var busNotifier  = require ('./lib/notifier.js');
-var busCommander = require ('./lib/commander.js');
+const busNotifier  = require ('./lib/notifier.js');
+const busCommander = require ('./lib/commander.js');
 
-var xLog      = require ('xcraft-core-log') (moduleName, null);
-var busConfig = require ('xcraft-core-etc') ().load ('xcraft-core-bus');
+const xFs       = require ('xcraft-core-fs');
+const xLog      = require ('xcraft-core-log') (moduleName, null);
+const busConfig = require ('xcraft-core-etc') ().load ('xcraft-core-bus');
 
-var EventEmitter = require ('events').EventEmitter;
+const EventEmitter = require ('events').EventEmitter;
 
-var bootReady = false;
-var token     = '';
-var emitter   = new EventEmitter ();
-var notifier  = {};
-var commander = {};
+const emitter = new EventEmitter ();
+
+let bootReady = false;
+let token     = '';
+let notifier  = {};
+let commander = {};
 
 
 function registerCommand (name, rc, handler) {
@@ -37,12 +39,9 @@ function registerCommand (name, rc, handler) {
  * Browse /scripts for zog modules, and register exported xcraftCommands.
  * (Activities).
  */
-var loadCommandsRegistry = function (modulePath, filterRegex) {
-  var path = require ('path');
-  var xFs  = require ('xcraft-core-fs');
-
-  var modules = {};
-  var modulesFiles = xFs.ls (modulePath, filterRegex);
+function loadCommandsRegistry (modulePath, filterRegex) {
+  const modules = {};
+  const modulesFiles = xFs.ls (modulePath, filterRegex);
 
   modulesFiles.forEach (function (fileName) {
     modules[fileName] = require (path.join (modulePath, fileName));
@@ -57,7 +56,7 @@ var loadCommandsRegistry = function (modulePath, filterRegex) {
       });
     }
   });
-};
+}
 
 exports.getEmitter = emitter;
 
@@ -119,8 +118,8 @@ exports.boot = watt (function * (commandHandlers, next) {
 exports.stop = function () {
   xLog.verb ('Buses stop called, stopping services and sending GameOver...');
 
-  var busClient = require ('xcraft-core-busclient').getGlobal ();
-  var msg = busClient.newMessage ();
+  const busClient = require ('xcraft-core-busclient').getGlobal ();
+  const msg = busClient.newMessage ();
   notifier.send ('gameover', msg);
 
   emitter.emit ('stop');
