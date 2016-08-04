@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Xcraft bus",
   "main": "index.js",
+  "engines": {
+    "node": ">=6"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,8 +16,8 @@
     "notifier"
   ],
   "repository": {
-    "type": "file",
-    "url": "lib/xcraft-core-bus"
+    "type": "git",
+    "url": "git+https://github.com/Xcraft-Inc/xcraft-core-bus.git"
   },
   "dependencies": {
     "axon": "^2.0.2",
@@ -27,5 +30,8 @@
   },
   "author": "Mathieu Schroeter & Samuel Loup",
   "license": "MIT",
-  "devDependencies": {}
+  "bugs": {
+    "url": "https://github.com/Xcraft-Inc/xcraft-core-bus/issues"
+  },
+  "homepage": "https://github.com/Xcraft-Inc/xcraft-core-bus#readme"
 }
