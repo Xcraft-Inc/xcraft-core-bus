@@ -24,6 +24,7 @@
     "watt": "^3.2.2",
     "xcraft-core-activity": "^1.0.0",
     "xcraft-core-busclient": "^1.0.0",
+    "xcraft-core-etc": "^1.0.0",
     "xcraft-core-fs": "^1.0.0",
     "xcraft-core-log": "^1.0.0",
     "xcraft-core-utils": "^1.0.0"
