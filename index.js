@@ -2,15 +2,15 @@
 
 const moduleName = 'bus';
 
-const path   = require ('path');
-const watt   = require ('watt');
+const path = require ('path');
+const watt = require ('watt');
 const orcish = require ('./lib/orcish.js');
 
-const busNotifier  = require ('./lib/notifier.js');
+const busNotifier = require ('./lib/notifier.js');
 const busCommander = require ('./lib/commander.js');
 
-const xFs       = require ('xcraft-core-fs');
-const xLog      = require ('xcraft-core-log') (moduleName, null);
+const xFs = require ('xcraft-core-fs');
+const xLog = require ('xcraft-core-log') (moduleName, null);
 const busConfig = require ('xcraft-core-etc') ().load ('xcraft-core-bus');
 
 const EventEmitter = require ('events').EventEmitter;
@@ -18,19 +18,18 @@ const EventEmitter = require ('events').EventEmitter;
 const emitter = new EventEmitter ();
 
 let bootReady = false;
-let token     = '';
-let notifier  = {};
+let token = '';
+let notifier = {};
 let commander = {};
-
 
 function registerCommand (name, rc, handler) {
   /* register commands as activity */
   busCommander.registerCommandHandler (
     name,
-    rc && rc.desc     || null,
-    rc && rc.options  || {},
+    (rc && rc.desc) || null,
+    (rc && rc.options) || {},
     true,
-    rc && rc.parallel || false,
+    (rc && rc.parallel) || false,
     handler
   );
 }
@@ -48,9 +47,9 @@ function loadCommandsRegistry (modulePath, filterRegex) {
 
     if (modules[fileName].hasOwnProperty ('xcraftCommands')) {
       const cmds = modules[fileName].xcraftCommands ();
-      const rc   = cmds.rc || {};
+      const rc = cmds.rc || {};
 
-      Object.keys (cmds.handlers).forEach ((action) => {
+      Object.keys (cmds.handlers).forEach (action => {
         const name = fileName.replace (/\.js$/, '') + '.' + action;
         registerCommand (name, rc[action], cmds.handlers[action]);
       });
@@ -82,7 +81,7 @@ exports.generateOrcName = function () {
  * @param {Object[]} commandHandlers - List of modules.
  * @param {function(err)} next
  */
-exports.boot = watt (function * (commandHandlers, next) {
+exports.boot = watt (function* (commandHandlers, next) {
   xLog.verb ('Booting...');
 
   /* Generate the token */
@@ -92,24 +91,30 @@ exports.boot = watt (function * (commandHandlers, next) {
 
   /* load some command handler from modules/scripts locations */
   Object.keys (commandHandlers).forEach (function (index) {
-    loadCommandsRegistry (commandHandlers[index].path,
-                          commandHandlers[index].pattern);
+    loadCommandsRegistry (
+      commandHandlers[index].path,
+      commandHandlers[index].pattern
+    );
   });
 
   /* Start the bus commander */
-  busCommander.start (busConfig.host,
-                      parseInt (busConfig.commanderPort),
-                      genToken,
-                      next.parallel ());
+  busCommander.start (
+    busConfig.host,
+    parseInt (busConfig.commanderPort),
+    genToken,
+    next.parallel ()
+  );
 
   /* Start the bus notifier */
-  busNotifier.start (busConfig.host,
-                     parseInt (busConfig.notifierPort),
-                     next.parallel ());
+  busNotifier.start (
+    busConfig.host,
+    parseInt (busConfig.notifierPort),
+    next.parallel ()
+  );
 
   yield next.sync ();
 
-  notifier  = busNotifier.bus;
+  notifier = busNotifier.bus;
   commander = busCommander;
   bootReady = true;
   emitter.emit ('ready');
