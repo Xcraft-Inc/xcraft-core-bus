@@ -34,5 +34,8 @@
   "bugs": {
     "url": "https://github.com/Xcraft-Inc/xcraft-core-bus/issues"
   },
-  "homepage": "https://github.com/Xcraft-Inc/xcraft-core-bus#readme"
+  "homepage": "https://github.com/Xcraft-Inc/xcraft-core-bus#readme",
+  "devDependencies": {
+    "xcraft-dev-rules": "^0.1.5"
+  }
 }
