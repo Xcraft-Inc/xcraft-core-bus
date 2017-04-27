@@ -122,6 +122,20 @@ class Bus extends EventEmitter {
     return true;
   }
 
+  reloadModule (file, root) {
+    if (!file || !root) {
+      xLog.err (`bad arguments`);
+      return false;
+    }
+
+    const name = file.replace (/\.js$/, '');
+    if (!this.unloadModule (name)) {
+      return false;
+    }
+
+    return this.loadModule (file, root);
+  }
+
   /**
    * Boot buses.
    *
