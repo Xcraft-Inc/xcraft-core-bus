@@ -26,10 +26,11 @@ class Bus extends EventEmitter {
     watt.wrapAll (this);
   }
 
-  static _registerCommand (name, rc, handler) {
+  static _registerCommand (name, location, rc, handler) {
     /* register commands as activity */
     busCommander.registerCommandHandler (
       name,
+      location,
       (rc && rc.desc) || null,
       (rc && rc.options) || {},
       true,
@@ -100,7 +101,7 @@ class Bus extends EventEmitter {
       })
       .forEach (cmd => {
         const modName = `${name}.${cmd}`;
-        Bus._registerCommand (modName, rc[cmd], cmds.handlers[cmd]);
+        Bus._registerCommand (modName, location, rc[cmd], cmds.handlers[cmd]);
       });
 
     return true;
