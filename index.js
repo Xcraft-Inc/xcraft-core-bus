@@ -43,10 +43,10 @@ class Bus extends EventEmitter {
    * Browse /scripts for zog modules, and register exported xcraftCommands.
    * (Activities).
    */
-  static _loadCommandsRegistry (modulePath, filterRegex) {
+  _loadCommandsRegistry (modulePath, filterRegex) {
     xFs
       .ls (modulePath, filterRegex)
-      .forEach (fileName => Bus.loadModule (fileName, modulePath));
+      .forEach (fileName => this.loadModule (fileName, modulePath));
   }
 
   generateOrcName () {
@@ -65,7 +65,7 @@ class Bus extends EventEmitter {
     return this._token;
   }
 
-  static loadModule (file, root) {
+  loadModule (file, root) {
     if (!file || !root) {
       xLog.err (`bad arguments`);
       return false;
@@ -122,8 +122,8 @@ class Bus extends EventEmitter {
     this._token = genToken;
 
     /* load some command handler from modules/scripts locations */
-    Object.keys (commandHandlers).forEach (function (index) {
-      Bus._loadCommandsRegistry (
+    Object.keys (commandHandlers).forEach (index => {
+      this._loadCommandsRegistry (
         commandHandlers[index].path,
         commandHandlers[index].pattern
       );
