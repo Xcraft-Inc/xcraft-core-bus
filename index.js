@@ -70,15 +70,23 @@ class Bus extends EventEmitter {
       return false;
     }
 
-    const handle = require (path.join (root, file));
+    const location = path.join (root, file);
+    const handle = require (location);
     if (!handle.hasOwnProperty ('xcraftCommands')) {
-      xLog.verb (`skip ${file} which is not a valid Xcraft module`);
+      xLog.verb (`skip ${location} which is not a valid Xcraft module`);
+      return false;
+    }
+
+    const name = file.replace (/\.js$/, '');
+    if (busCommander.isModuleRegistered (name)) {
+      xLog.warn (
+        `skip ${location} because a module with the same name is already registered`
+      );
       return false;
     }
 
     const cmds = handle.xcraftCommands ();
     const rc = cmds.rc || {};
-    const name = file.replace (/\.js$/, '');
 
     /* If at least one command is already registered, this module is
      * fully skipped.
