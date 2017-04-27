@@ -13,121 +13,127 @@ const xFs = require ('xcraft-core-fs');
 const xLog = require ('xcraft-core-log') (moduleName, null);
 const busConfig = require ('xcraft-core-etc') ().load ('xcraft-core-bus');
 
-const EventEmitter = require ('events').EventEmitter;
+const {EventEmitter} = require ('events');
 
-const emitter = new EventEmitter ();
+class Bus extends EventEmitter {
+  constructor () {
+    super ();
 
-let token = '';
-let notifier = {};
-let commander = {};
+    this._token = '';
+    this._notifier = {};
+    this._commander = {};
 
-function registerCommand (name, rc, handler) {
-  /* register commands as activity */
-  busCommander.registerCommandHandler (
-    name,
-    (rc && rc.desc) || null,
-    (rc && rc.options) || {},
-    true,
-    (rc && rc.parallel) || false,
-    handler
-  );
-}
+    watt.wrapAll (this);
+  }
 
-/**
- * Browse /scripts for zog modules, and register exported xcraftCommands.
- * (Activities).
- */
-function loadCommandsRegistry (modulePath, filterRegex) {
-  xFs
-    .ls (modulePath, filterRegex)
-    .map (fileName => {
-      return {
-        handle: require (path.join (modulePath, fileName)),
-        fileName,
-      };
-    })
-    .filter (mod => mod.handle.hasOwnProperty ('xcraftCommands'))
-    .forEach (mod => {
-      const cmds = mod.handle.xcraftCommands ();
-      const rc = cmds.rc || {};
-
-      Object.keys (cmds.handlers).forEach (action => {
-        const name = mod.fileName.replace (/\.js$/, '') + '.' + action;
-        registerCommand (name, rc[action], cmds.handlers[action]);
-      });
-    });
-}
-
-exports.getEmitter = emitter;
-
-exports.getCommander = function () {
-  return commander;
-};
-
-exports.getNotifier = function () {
-  return notifier;
-};
-
-exports.getToken = function () {
-  return token;
-};
-
-exports.generateOrcName = function () {
-  return orcish.generateOrcName ();
-};
-
-/**
- * Boot buses.
- *
- * @param {Object[]} commandHandlers - List of modules.
- * @param {function(err)} next
- */
-exports.boot = watt (function* (commandHandlers, next) {
-  xLog.verb ('Booting...');
-
-  /* Generate the token */
-  const genToken = yield orcish.generateGreatHall (next);
-  xLog.info ('Great Hall created: %s', genToken);
-  token = genToken;
-
-  /* load some command handler from modules/scripts locations */
-  Object.keys (commandHandlers).forEach (function (index) {
-    loadCommandsRegistry (
-      commandHandlers[index].path,
-      commandHandlers[index].pattern
+  static _registerCommand (name, rc, handler) {
+    /* register commands as activity */
+    busCommander.registerCommandHandler (
+      name,
+      (rc && rc.desc) || null,
+      (rc && rc.options) || {},
+      true,
+      (rc && rc.parallel) || false,
+      handler
     );
-  });
+  }
 
-  /* Start the bus commander */
-  busCommander.start (
-    busConfig.host,
-    parseInt (busConfig.commanderPort),
-    genToken,
-    next.parallel ()
-  );
+  /**
+   * Browse /scripts for zog modules, and register exported xcraftCommands.
+   * (Activities).
+   */
+  static _loadCommandsRegistry (modulePath, filterRegex) {
+    xFs
+      .ls (modulePath, filterRegex)
+      .map (fileName => {
+        return {
+          handle: require (path.join (modulePath, fileName)),
+          fileName,
+        };
+      })
+      .filter (mod => mod.handle.hasOwnProperty ('xcraftCommands'))
+      .forEach (mod => {
+        const cmds = mod.handle.xcraftCommands ();
+        const rc = cmds.rc || {};
 
-  /* Start the bus notifier */
-  busNotifier.start (
-    busConfig.host,
-    parseInt (busConfig.notifierPort),
-    next.parallel ()
-  );
+        Object.keys (cmds.handlers).forEach (action => {
+          const name = mod.fileName.replace (/\.js$/, '') + '.' + action;
+          Bus._registerCommand (name, rc[action], cmds.handlers[action]);
+        });
+      });
+  }
 
-  yield next.sync ();
+  generateOrcName () {
+    return orcish.generateOrcName ();
+  }
 
-  notifier = busNotifier.bus;
-  commander = busCommander;
-  emitter.emit ('ready');
-});
+  getCommander () {
+    return this._commander;
+  }
 
-exports.stop = function () {
-  xLog.verb ('Buses stop called, stopping services and sending GameOver...');
+  getNotifier () {
+    return this._notifier;
+  }
 
-  const busClient = require ('xcraft-core-busclient').getGlobal ();
-  const msg = busClient.newMessage ();
-  notifier.send ('gameover', msg);
+  getToken () {
+    return this._token;
+  }
 
-  emitter.emit ('stop');
-  busCommander.stop ();
-  busNotifier.stop ();
-};
+  /**
+   * Boot buses.
+   *
+   * @param {Object[]} commandHandlers - List of modules.
+   * @param {function(err)} next
+   */
+  *boot (commandHandlers, next) {
+    xLog.verb ('Booting...');
+
+    /* Generate the token */
+    const genToken = yield orcish.generateGreatHall (next);
+    xLog.info ('Great Hall created: %s', genToken);
+    this._token = genToken;
+
+    /* load some command handler from modules/scripts locations */
+    Object.keys (commandHandlers).forEach (function (index) {
+      Bus._loadCommandsRegistry (
+        commandHandlers[index].path,
+        commandHandlers[index].pattern
+      );
+    });
+
+    /* Start the bus commander */
+    busCommander.start (
+      busConfig.host,
+      parseInt (busConfig.commanderPort),
+      genToken,
+      next.parallel ()
+    );
+
+    /* Start the bus notifier */
+    busNotifier.start (
+      busConfig.host,
+      parseInt (busConfig.notifierPort),
+      next.parallel ()
+    );
+
+    yield next.sync ();
+
+    this._notifier = busNotifier.bus;
+    this._commander = busCommander;
+    this.emit ('ready');
+  }
+
+  stop () {
+    xLog.verb ('Buses stop called, stopping services and sending GameOver...');
+
+    const busClient = require ('xcraft-core-busclient').getGlobal ();
+    const msg = busClient.newMessage ();
+    this._notifier.send ('gameover', msg);
+
+    this.emit ('stop');
+    busCommander.stop ();
+    busNotifier.stop ();
+  }
+}
+
+module.exports = new Bus ();
