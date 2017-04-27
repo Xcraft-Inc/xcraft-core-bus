@@ -65,6 +65,18 @@ class Bus extends EventEmitter {
     return this._token;
   }
 
+  _notifyCmdsRegistry () {
+    const busClient = require ('xcraft-core-busclient').getGlobal ();
+    if (!busClient.isConnected ()) {
+      return;
+    }
+
+    busClient.events.send (
+      'greathall::bus.commands.registry',
+      busCommander.getRegistry ()
+    );
+  }
+
   loadModule (file, root) {
     if (!file || !root) {
       xLog.err (`bad arguments`);
@@ -104,6 +116,7 @@ class Bus extends EventEmitter {
         Bus._registerCommand (modName, location, rc[cmd], cmds.handlers[cmd]);
       });
 
+    this._notifyCmdsRegistry ();
     return true;
   }
 
@@ -119,6 +132,8 @@ class Bus extends EventEmitter {
     }
 
     busCommander.unregisterModule (name);
+
+    this._notifyCmdsRegistry ();
     return true;
   }
 
