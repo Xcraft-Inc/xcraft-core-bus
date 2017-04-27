@@ -45,22 +45,7 @@ class Bus extends EventEmitter {
   static _loadCommandsRegistry (modulePath, filterRegex) {
     xFs
       .ls (modulePath, filterRegex)
-      .map (fileName => {
-        return {
-          handle: require (path.join (modulePath, fileName)),
-          fileName,
-        };
-      })
-      .filter (mod => mod.handle.hasOwnProperty ('xcraftCommands'))
-      .forEach (mod => {
-        const cmds = mod.handle.xcraftCommands ();
-        const rc = cmds.rc || {};
-
-        Object.keys (cmds.handlers).forEach (action => {
-          const name = mod.fileName.replace (/\.js$/, '') + '.' + action;
-          Bus._registerCommand (name, rc[action], cmds.handlers[action]);
-        });
-      });
+      .forEach (fileName => Bus.loadModule (fileName, modulePath));
   }
 
   generateOrcName () {
@@ -77,6 +62,40 @@ class Bus extends EventEmitter {
 
   getToken () {
     return this._token;
+  }
+
+  static loadModule (file, root) {
+    if (!file || !root) {
+      xLog.err (`bad arguments`);
+      return false;
+    }
+
+    const handle = require (path.join (root, file));
+    if (!handle.hasOwnProperty ('xcraftCommands')) {
+      xLog.verb (`skip ${file} which is not a valid Xcraft module`);
+      return false;
+    }
+
+    const cmds = handle.xcraftCommands ();
+    const rc = cmds.rc || {};
+    const name = file.replace (/\.js$/, '');
+
+    /* If at least one command is already registered, this module is
+     * fully skipped.
+     */
+    Object.keys (cmds.handlers)
+      .map (cmd => {
+        if (busCommander.isCommandRegistered (cmd)) {
+          throw new Error (`command ${cmd} already registered`);
+        }
+        return cmd;
+      })
+      .forEach (cmd => {
+        const modName = `${name}.${cmd}`;
+        Bus._registerCommand (modName, rc[cmd], cmds.handlers[cmd]);
+      });
+
+    return true;
   }
 
   /**
