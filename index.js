@@ -107,6 +107,21 @@ class Bus extends EventEmitter {
     return true;
   }
 
+  unloadModule (name) {
+    if (!name) {
+      xLog.err (`bad arguments`);
+      return false;
+    }
+
+    if (!busCommander.isModuleRegistered (name)) {
+      xLog.warn (`the module ${name} is not loaded`);
+      return false;
+    }
+
+    busCommander.unregisterModule (name);
+    return true;
+  }
+
   /**
    * Boot buses.
    *
