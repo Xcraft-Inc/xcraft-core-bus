@@ -38,22 +38,24 @@ function registerCommand (name, rc, handler) {
  * (Activities).
  */
 function loadCommandsRegistry (modulePath, filterRegex) {
-  const modules = {};
-  const modulesFiles = xFs.ls (modulePath, filterRegex);
-
-  modulesFiles.forEach (function (fileName) {
-    modules[fileName] = require (path.join (modulePath, fileName));
-
-    if (modules[fileName].hasOwnProperty ('xcraftCommands')) {
-      const cmds = modules[fileName].xcraftCommands ();
+  xFs
+    .ls (modulePath, filterRegex)
+    .map (fileName => {
+      return {
+        handle: require (path.join (modulePath, fileName)),
+        fileName,
+      };
+    })
+    .filter (mod => mod.handle.hasOwnProperty ('xcraftCommands'))
+    .forEach (mod => {
+      const cmds = mod.handle.xcraftCommands ();
       const rc = cmds.rc || {};
 
       Object.keys (cmds.handlers).forEach (action => {
-        const name = fileName.replace (/\.js$/, '') + '.' + action;
+        const name = mod.fileName.replace (/\.js$/, '') + '.' + action;
         registerCommand (name, rc[action], cmds.handlers[action]);
       });
-    }
-  });
+    });
 }
 
 exports.getEmitter = emitter;
