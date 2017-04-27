@@ -1,0 +1,29 @@
+{
+  "module.load": {
+    "parallel": false,
+    "desc": "load a module",
+    "options": {
+      "params": {
+        "required": "file"
+      }
+    }
+  },
+  "module.unload": {
+    "parallel": false,
+    "desc": "unload a module",
+    "options": {
+      "params": {
+        "required": "name"
+      }
+    }
+  },
+  "module.reload": {
+    "parallel": false,
+    "desc": "reload a module",
+    "options": {
+      "params": {
+        "required": "file"
+      }
+    }
+  }
+}
