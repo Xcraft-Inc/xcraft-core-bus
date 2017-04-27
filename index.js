@@ -17,7 +17,6 @@ const EventEmitter = require ('events').EventEmitter;
 
 const emitter = new EventEmitter ();
 
-let bootReady = false;
 let token = '';
 let notifier = {};
 let commander = {};
@@ -116,7 +115,6 @@ exports.boot = watt (function* (commandHandlers, next) {
 
   notifier = busNotifier.bus;
   commander = busCommander;
-  bootReady = true;
   emitter.emit ('ready');
 });
 
