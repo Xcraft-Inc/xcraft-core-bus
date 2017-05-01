@@ -113,10 +113,10 @@ cmds['module.watch'] = function* (msg, resp, next) {
 
 cmds['module.unwatch'] = function (msg, resp) {
   const {file} = msg.data;
-  const dirnames = getModuleFiles (file);
+  const dirnames = getModuleFiles (file).map (file => path.dirname (file));
 
   dirnames.filter (dirname => !!watched[dirname]).forEach (dirname => {
-    resp.log.info (`stop watching for ${file}`);
+    resp.log.info (`stop watching for ${dirname}`);
     watched[dirname].handle.close ();
     delete watched[dirname];
   });
