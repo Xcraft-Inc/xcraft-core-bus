@@ -53,6 +53,26 @@ class Bus extends EventEmitter {
     });
   }
 
+  _notifyCmdsRegistry () {
+    const busClient = require ('xcraft-core-busclient').getGlobal ();
+    if (!busClient.isConnected ()) {
+      return;
+    }
+
+    busClient.events.send (
+      'greathall::bus.commands.registry',
+      busCommander.getRegistry ()
+    );
+  }
+
+  _runningModules () {
+    const registry = busCommander.getRegistry ();
+    return Object.keys (registry)
+      .filter (key => !/^bus\./.test (key))
+      .map (key => registry[key])
+      .filter (cmd => !!cmd.desc);
+  }
+
   generateOrcName () {
     return orcish.generateOrcName ();
   }
@@ -67,18 +87,6 @@ class Bus extends EventEmitter {
 
   getToken () {
     return this._token;
-  }
-
-  _notifyCmdsRegistry () {
-    const busClient = require ('xcraft-core-busclient').getGlobal ();
-    if (!busClient.isConnected ()) {
-      return;
-    }
-
-    busClient.events.send (
-      'greathall::bus.commands.registry',
-      busCommander.getRegistry ()
-    );
   }
 
   loadModule (file, root) {
@@ -142,14 +150,6 @@ class Bus extends EventEmitter {
     const name = file.replace (/\.js$/, '');
     this.unloadModule (name);
     this.loadModule (file, root);
-  }
-
-  _runningModules () {
-    const registry = busCommander.getRegistry ();
-    return Object.keys (registry)
-      .filter (key => !/^bus\./.test (key))
-      .map (key => registry[key])
-      .filter (cmd => !!cmd.desc);
   }
 
   runningModuleNames () {
