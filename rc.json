@@ -4,7 +4,7 @@
     "desc": "load a module",
     "options": {
       "params": {
-        "required": "file"
+        "optional": "file"
       }
     }
   },
@@ -13,7 +13,7 @@
     "desc": "unload a module",
     "options": {
       "params": {
-        "required": "name"
+        "optional": "name"
       }
     }
   },
@@ -22,7 +22,7 @@
     "desc": "reload a module",
     "options": {
       "params": {
-        "required": "file"
+        "optional": "file"
       }
     }
   },

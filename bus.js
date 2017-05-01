@@ -4,69 +4,74 @@ const path = require ('path');
 const xBus = require ('.');
 
 const cmds = {};
+const watched = {};
+
+function getModuleFiles (file) {
+  return file ? [file] : xBus.runningModuleLocations ();
+}
+
+function getModuleNames (name) {
+  return name ? [name] : xBus.runningModuleNames ();
+}
 
 cmds['module.load'] = function (msg, resp) {
-  const location = msg.data.file;
-  const file = path.basename (location);
-  const root = path.dirname (location);
+  const {file} = msg.data;
+  const files = getModuleFiles (file);
 
-  try {
-    if (xBus.loadModule (file, root)) {
-      resp.log.info (`module ${location} successfully loaded`);
-    } else {
-      resp.log.warn (`cannot load module ${location}`);
+  files.forEach (file => {
+    const filename = path.basename (file);
+    const dirname = path.dirname (file);
+
+    try {
+      xBus.loadModule (filename, dirname);
+      resp.log.info (`module ${filename} successfully loaded`);
+    } catch (ex) {
+      resp.log.warn (ex.message);
     }
-  } catch (ex) {
-    resp.log.err (ex.message);
-  }
+  });
 
   resp.events.send ('bus.module.load.finished');
 };
 
 cmds['module.unload'] = function (msg, resp) {
   const {name} = msg.data;
+  const names = getModuleNames (name);
 
-  try {
-    if (xBus.unloadModule (name)) {
+  names.forEach (name => {
+    try {
+      xBus.unloadModule (name);
       resp.log.info (`module ${name} successfully unloaded`);
-    } else {
-      resp.log.warn (`cannot unload module ${name}`);
+    } catch (ex) {
+      resp.log.warn (ex.message);
     }
-  } catch (ex) {
-    resp.log.err (ex.message);
-  }
+  });
 
   resp.events.send ('bus.module.unload.finished');
 };
 
 cmds['module.reload'] = function (msg, resp) {
-  const location = msg.data.file;
-  const file = path.basename (location);
-  const root = path.dirname (location);
+  const {file} = msg.data;
+  const files = getModuleFiles (file);
 
-  try {
-    if (xBus.reloadModule (file, root)) {
-      resp.log.info (`module ${location} successfully reloaded`);
-    } else {
-      resp.log.warn (`cannot reload module ${location}`);
+  files.forEach (file => {
+    const filename = path.basename (file);
+    const dirname = path.dirname (file);
+
+    try {
+      xBus.reloadModule (filename, dirname);
+      resp.log.info (`module ${filename} successfully reloaded`);
+    } catch (ex) {
+      resp.log.err (ex.message);
     }
-  } catch (ex) {
-    resp.log.err (ex.message);
-  }
+  });
 
   resp.events.send ('bus.module.reload.finished');
 };
 
-const watched = {};
-
-function getModulesList (file) {
-  return file ? [file] : xBus.runningModules ();
-}
-
 cmds['module.watch'] = function* (msg, resp, next) {
   const chokidar = require ('chokidar');
   const {file} = msg.data;
-  const files = getModulesList (file);
+  const files = getModuleFiles (file);
 
   for (const file of files) {
     const dirname = path.dirname (file);
@@ -108,7 +113,7 @@ cmds['module.watch'] = function* (msg, resp, next) {
 
 cmds['module.unwatch'] = function (msg, resp) {
   const {file} = msg.data;
-  const dirnames = getModulesList (file);
+  const dirnames = getModuleFiles (file);
 
   dirnames.filter (dirname => !!watched[dirname]).forEach (dirname => {
     resp.log.info (`stop watching for ${file}`);

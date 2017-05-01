@@ -44,9 +44,13 @@ class Bus extends EventEmitter {
    * (Activities).
    */
   _loadCommandsRegistry (modulePath, filterRegex) {
-    xFs
-      .ls (modulePath, filterRegex)
-      .forEach (fileName => this.loadModule (fileName, modulePath));
+    xFs.ls (modulePath, filterRegex).forEach (fileName => {
+      try {
+        this.loadModule (fileName, modulePath);
+      } catch (ex) {
+        xLog.warn (ex.message);
+      }
+    });
   }
 
   generateOrcName () {
@@ -79,23 +83,20 @@ class Bus extends EventEmitter {
 
   loadModule (file, root) {
     if (!file || !root) {
-      xLog.err (`bad arguments`);
-      return false;
+      throw new Error (`bad arguments`);
     }
 
     const location = path.join (root, file);
     const handle = require (location);
     if (!handle.hasOwnProperty ('xcraftCommands')) {
-      xLog.verb (`skip ${location} which is not a valid Xcraft module`);
-      return false;
+      throw new Error (`skip ${location} which is not a valid Xcraft module`);
     }
 
     const name = file.replace (/\.js$/, '');
     if (busCommander.isModuleRegistered (name)) {
-      xLog.warn (
+      throw new Error (
         `skip ${location} because a module with the same name is already registered`
       );
-      return false;
     }
 
     const cmds = handle.xcraftCommands ();
@@ -117,43 +118,53 @@ class Bus extends EventEmitter {
       });
 
     this._notifyCmdsRegistry ();
-    return true;
   }
 
   unloadModule (name) {
     if (!name) {
-      xLog.err (`bad arguments`);
-      return false;
+      throw new Error (`bad arguments`);
     }
 
     if (!busCommander.isModuleRegistered (name)) {
-      xLog.warn (`the module ${name} is not loaded`);
-      return false;
+      throw new Error (`the module ${name} is not loaded`);
     }
 
     busCommander.unregisterModule (name);
 
     this._notifyCmdsRegistry ();
-    return true;
   }
 
   reloadModule (file, root) {
     if (!file || !root) {
-      xLog.err (`bad arguments`);
-      return false;
+      throw new Error (`bad arguments`);
     }
 
     const name = file.replace (/\.js$/, '');
     this.unloadModule (name);
-    return this.loadModule (file, root);
+    this.loadModule (file, root);
   }
 
-  runningModules () {
+  _runningModules () {
     const registry = busCommander.getRegistry ();
     return Object.keys (registry)
       .filter (key => !/^bus\./.test (key))
       .map (key => registry[key])
-      .filter (cmd => !!cmd.desc)
+      .filter (cmd => !!cmd.desc);
+  }
+
+  runningModuleNames () {
+    return this._runningModules ()
+      .map (cmd => cmd.name.replace (/(^[^.]*)\..*/, '$1'))
+      .reduce ((acc, name) => {
+        if (!acc.includes (name)) {
+          acc.push (name);
+        }
+        return acc;
+      }, []);
+  }
+
+  runningModuleLocations () {
+    return this._runningModules ()
       .map (cmd => cmd.location)
       .reduce ((acc, location) => {
         if (!acc.includes (location)) {
