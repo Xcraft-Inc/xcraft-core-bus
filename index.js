@@ -151,6 +151,21 @@ class Bus extends EventEmitter {
     return this.loadModule (file, root);
   }
 
+  runningModules () {
+    const registry = busCommander.getRegistry ();
+    return Object.keys (registry)
+      .filter (key => !/^bus\./.test (key))
+      .map (key => registry[key])
+      .filter (cmd => !!cmd.desc)
+      .map (cmd => cmd.location)
+      .reduce ((acc, location) => {
+        if (!acc.includes (location)) {
+          acc.push (location);
+        }
+        return acc;
+      }, []);
+  }
+
   /**
    * Boot buses.
    *

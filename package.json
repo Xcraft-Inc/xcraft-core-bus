@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "axon": "^2.0.2",
+    "chokidar": "^1.6.1",
     "clear-require": "^2.0.0",
     "watt": "^3.2.2",
     "xcraft-core-activity": "^1.0.0",

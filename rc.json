@@ -25,5 +25,23 @@
         "required": "file"
       }
     }
+  },
+  "module.watch": {
+    "parallel": true,
+    "desc": "start watching for module auto-reload",
+    "options": {
+      "params": {
+        "optional": "file"
+      }
+    }
+  },
+  "module.unwatch": {
+    "parallel": true,
+    "desc": "stop watching for module auto-reload",
+    "options": {
+      "params": {
+        "optional": "file"
+      }
+    }
   }
 }
