@@ -43,14 +43,14 @@ class Bus extends EventEmitter {
    * Browse /scripts for zog modules, and register exported xcraftCommands.
    * (Activities).
    */
-  _loadCommandsRegistry (modulePath, filterRegex) {
-    xFs.ls (modulePath, filterRegex).forEach (fileName => {
+  *_loadCommandsRegistry (modulePath, filterRegex) {
+    for (const fileName of xFs.ls (modulePath, filterRegex)) {
       try {
-        this.loadModule (fileName, modulePath);
+        yield this.loadModule (null, fileName, modulePath);
       } catch (ex) {
         xLog.warn (ex.message);
       }
-    });
+    }
   }
 
   _notifyCmdsRegistry () {
@@ -89,7 +89,7 @@ class Bus extends EventEmitter {
     return this._token;
   }
 
-  loadModule (file, root) {
+  *loadModule (resp, file, root, next) {
     if (!file || !root) {
       throw new Error (`bad arguments`);
     }
@@ -126,9 +126,13 @@ class Bus extends EventEmitter {
       });
 
     this._notifyCmdsRegistry ();
+
+    if (resp) {
+      yield resp.command.send (`${name}._postload`, null, next);
+    }
   }
 
-  unloadModule (name) {
+  *unloadModule (resp, name, next) {
     if (!name) {
       throw new Error (`bad arguments`);
     }
@@ -137,19 +141,23 @@ class Bus extends EventEmitter {
       throw new Error (`the module ${name} is not loaded`);
     }
 
+    if (resp) {
+      yield resp.command.send (`${name}._preunload`, null, next);
+    }
+
     busCommander.unregisterModule (name);
 
     this._notifyCmdsRegistry ();
   }
 
-  reloadModule (file, root) {
+  *reloadModule (resp, file, root) {
     if (!file || !root) {
       throw new Error (`bad arguments`);
     }
 
     const name = file.replace (/\.js$/, '');
-    this.unloadModule (name);
-    this.loadModule (file, root);
+    yield this.unloadModule (resp, name);
+    yield this.loadModule (resp, file, root);
   }
 
   runningModuleNames () {
@@ -189,12 +197,12 @@ class Bus extends EventEmitter {
     this._token = genToken;
 
     /* load some command handler from modules/scripts locations */
-    Object.keys (commandHandlers).forEach (index => {
-      this._loadCommandsRegistry (
+    for (const index of Object.keys (commandHandlers)) {
+      yield this._loadCommandsRegistry (
         commandHandlers[index].path,
         commandHandlers[index].pattern
       );
-    });
+    }
 
     /* Start the bus commander */
     busCommander.start (

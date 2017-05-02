@@ -14,56 +14,56 @@ function getModuleNames (name) {
   return name ? [name] : xBus.runningModuleNames ();
 }
 
-cmds['module.load'] = function (msg, resp) {
+cmds['module.load'] = function* (msg, resp) {
   const {file} = msg.data;
   const files = getModuleFiles (file);
 
-  files.forEach (file => {
+  for (const file of files) {
     const filename = path.basename (file);
     const dirname = path.dirname (file);
 
     try {
-      xBus.loadModule (filename, dirname);
+      yield xBus.loadModule (resp, filename, dirname);
       resp.log.info (`module ${filename} successfully loaded`);
     } catch (ex) {
       resp.log.warn (ex.message);
     }
-  });
+  }
 
   resp.events.send ('bus.module.load.finished');
 };
 
-cmds['module.unload'] = function (msg, resp) {
+cmds['module.unload'] = function* (msg, resp) {
   const {name} = msg.data;
   const names = getModuleNames (name);
 
-  names.forEach (name => {
+  for (const name of names) {
     try {
-      xBus.unloadModule (name);
+      yield xBus.unloadModule (resp, name);
       resp.log.info (`module ${name} successfully unloaded`);
     } catch (ex) {
       resp.log.warn (ex.message);
     }
-  });
+  }
 
   resp.events.send ('bus.module.unload.finished');
 };
 
-cmds['module.reload'] = function (msg, resp) {
+cmds['module.reload'] = function* (msg, resp) {
   const {file} = msg.data;
   const files = getModuleFiles (file);
 
-  files.forEach (file => {
+  for (const file of files) {
     const filename = path.basename (file);
     const dirname = path.dirname (file);
 
     try {
-      xBus.reloadModule (filename, dirname);
+      yield xBus.reloadModule (resp, filename, dirname);
       resp.log.info (`module ${filename} successfully reloaded`);
     } catch (ex) {
       resp.log.err (ex.message);
     }
-  });
+  }
 
   resp.events.send ('bus.module.reload.finished');
 };
