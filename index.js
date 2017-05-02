@@ -166,7 +166,11 @@ class Bus extends EventEmitter {
     }
 
     const name = file.replace (/\.js$/, '');
-    yield this.unloadModule (resp, name);
+    try {
+      yield this.unloadModule (resp, name);
+    } catch (ex) {
+      /* ignore exceptions */
+    }
     yield this.loadModule (resp, file, root);
   }
 
