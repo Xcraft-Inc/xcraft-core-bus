@@ -90,6 +90,8 @@ class Bus extends EventEmitter {
   }
 
   *loadModule (resp, file, root, next) {
+    const clearRequire = require ('clear-require');
+
     if (!file || !root) {
       throw new Error (`bad arguments`);
     }
@@ -97,6 +99,7 @@ class Bus extends EventEmitter {
     const location = path.join (root, file);
     const handle = require (location);
     if (!handle.hasOwnProperty ('xcraftCommands')) {
+      clearRequire (location);
       throw new Error (`skip ${location} which is not a valid Xcraft module`);
     }
 
@@ -107,7 +110,14 @@ class Bus extends EventEmitter {
       );
     }
 
-    const cmds = handle.xcraftCommands ();
+    let cmds = {};
+
+    try {
+      cmds = handle.xcraftCommands ();
+    } catch (ex) {
+      clearRequire (location);
+      throw new Error (ex);
+    }
     const rc = cmds.rc || {};
 
     /* If at least one command is already registered, this module is
