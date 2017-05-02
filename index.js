@@ -43,10 +43,10 @@ class Bus extends EventEmitter {
    * Browse /scripts for zog modules, and register exported xcraftCommands.
    * (Activities).
    */
-  *_loadCommandsRegistry (modulePath, filterRegex) {
+  *_loadCommandsRegistry (resp, modulePath, filterRegex) {
     for (const fileName of xFs.ls (modulePath, filterRegex)) {
       try {
-        yield this.loadModule (null, fileName, modulePath);
+        yield this.loadModule (resp, fileName, modulePath);
       } catch (ex) {
         xLog.warn (ex.message);
       }
@@ -210,14 +210,6 @@ class Bus extends EventEmitter {
     xLog.info ('Great Hall created: %s', genToken);
     this._token = genToken;
 
-    /* load some command handler from modules/scripts locations */
-    for (const index of Object.keys (commandHandlers)) {
-      yield this._loadCommandsRegistry (
-        commandHandlers[index].path,
-        commandHandlers[index].pattern
-      );
-    }
-
     /* Start the bus commander */
     busCommander.start (
       busConfig.host,
@@ -237,7 +229,20 @@ class Bus extends EventEmitter {
 
     this._notifier = busNotifier.bus;
     this._commander = busCommander;
-    this.emit ('ready');
+
+    this.emit ('ready', (busClient, callback) => {
+      /* load some command handler from modules/scripts locations */
+      Object.keys (commandHandlers).forEach (index => {
+        const resp = busClient.newResponse (moduleName, 'greathall');
+        this._loadCommandsRegistry (
+          resp,
+          commandHandlers[index].path,
+          commandHandlers[index].pattern
+        );
+      });
+
+      callback ();
+    });
   }
 
   stop () {
