@@ -230,19 +230,24 @@ class Bus extends EventEmitter {
     this._notifier = busNotifier.bus;
     this._commander = busCommander;
 
-    this.emit ('ready', (busClient, callback) => {
-      /* load some command handler from modules/scripts locations */
-      Object.keys (commandHandlers).forEach (index => {
-        const resp = busClient.newResponse (moduleName, 'greathall');
-        this._loadCommandsRegistry (
-          resp,
-          commandHandlers[index].path,
-          commandHandlers[index].pattern
-        );
-      });
+    const self = this;
 
-      callback ();
-    });
+    this.emit (
+      'ready',
+      watt (function* (busClient, next) {
+        /* load some command handler from modules/scripts locations */
+        for (const index of Object.keys (commandHandlers)) {
+          const resp = busClient.newResponse (moduleName, 'greathall');
+          self._loadCommandsRegistry (
+            resp,
+            commandHandlers[index].path,
+            commandHandlers[index].pattern,
+            next.parallel ()
+          );
+        }
+        yield next.sync ();
+      })
+    );
   }
 
   stop () {
