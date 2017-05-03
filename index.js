@@ -70,7 +70,7 @@ class Bus extends EventEmitter {
     return Object.keys (registry)
       .filter (key => !/^bus\./.test (key))
       .map (key => registry[key])
-      .filter (cmd => !!cmd.desc);
+      .filter (cmd => !!cmd.desc && !!cmd.location);
   }
 
   generateOrcName () {
