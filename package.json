@@ -2,7 +2,7 @@
   "name": "xcraft-core-bus",
   "version": "1.0.0",
   "description": "Xcraft bus",
-  "main": "index.js",
+  "main": "lib/index.js",
   "engines": {
     "node": ">=6"
   },
