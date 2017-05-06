@@ -35,5 +35,5 @@ one of course).
 - `bus.module.load`
 - `bus.module.unload`
 - `bus.module.reload`
-- `bus-module.watch`
+- `bus.module.watch`
 - `bus.module.unwatch`
