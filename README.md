@@ -29,7 +29,7 @@ to shutdown the server.
 ## Commands
 
 The modules are dynamically loaded on the bus. Some public commands are
-available in order to control the lifecycle of all modules (exepted this
+available in order to control the lifecycle of all modules (excepted this
 one of course).
 
 - `bus.module.load`
