@@ -131,10 +131,54 @@ cmds['module.unwatch'] = function (msg, resp) {
  * @returns {Object} The list and definitions of commands.
  */
 exports.xcraftCommands = function () {
-  const path = require ('path');
-  const xUtils = require ('xcraft-core-utils');
   return {
     handlers: cmds,
-    rc: xUtils.json.fromFile (path.join (__dirname, './rc.json')),
+    rc: {
+      'module.load': {
+        parallel: false,
+        desc: 'load a module',
+        options: {
+          params: {
+            optional: 'file',
+          },
+        },
+      },
+      'module.unload': {
+        parallel: false,
+        desc: 'unload a module',
+        options: {
+          params: {
+            optional: 'name',
+          },
+        },
+      },
+      'module.reload': {
+        parallel: false,
+        desc: 'reload a module',
+        options: {
+          params: {
+            optional: 'file',
+          },
+        },
+      },
+      'module.watch': {
+        parallel: true,
+        desc: 'start watching for module auto-reload',
+        options: {
+          params: {
+            optional: 'file',
+          },
+        },
+      },
+      'module.unwatch': {
+        parallel: true,
+        desc: 'stop watching for module auto-reload',
+        options: {
+          params: {
+            optional: 'file',
+          },
+        },
+      },
+    },
   };
 };
