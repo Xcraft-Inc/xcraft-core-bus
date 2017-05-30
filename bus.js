@@ -73,8 +73,16 @@ cmds['module.watch'] = function* (msg, resp, next) {
   const {file} = msg.data;
   const files = getModuleFiles (file);
 
+  const dirList = new Set ();
+
   for (const file of files) {
     const dirname = path.dirname (file);
+
+    if (dirList.has (dirname)) {
+      continue;
+    }
+
+    dirList.add (dirname);
 
     if (watched[dirname]) {
       watched[dirname].handle.close ();
