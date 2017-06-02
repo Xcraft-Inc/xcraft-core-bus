@@ -15,54 +15,49 @@ function getModuleNames (name) {
 }
 
 cmds['module.load'] = function* (msg, resp) {
-  const {file} = msg.data;
-  const files = getModuleFiles (file);
+  const {files} = msg.data;
+  const modFiles = !files.length ? getModuleFiles () : files;
 
-  for (const file of files) {
-    const filename = path.basename (file);
-    const dirname = path.dirname (file);
+  const dirname = path.dirname (modFiles[0]);
+  const filenames = modFiles.map (file => path.basename (file));
 
-    try {
-      yield xBus.loadModule (resp, filename, dirname);
-      resp.log.info (`module ${filename} successfully loaded`);
-    } catch (ex) {
-      resp.log.warn (ex.message);
-    }
+  //READ DEF: FIND HOT
+  try {
+    yield xBus.loadModule (resp, filenames, dirname, false);
+    resp.log.info (`module(s) ${filenames.join (', ')} successfully loaded`);
+  } catch (ex) {
+    resp.log.warn (ex.stack);
   }
 
   resp.events.send ('bus.module.load.finished');
 };
 
 cmds['module.unload'] = function* (msg, resp) {
-  const {name} = msg.data;
-  const names = getModuleNames (name);
+  const {names} = msg.data;
+  const modNames = !names.length ? getModuleNames () : names;
 
-  for (const name of names) {
-    try {
-      yield xBus.unloadModule (resp, name);
-      resp.log.info (`module ${name} successfully unloaded`);
-    } catch (ex) {
-      resp.log.warn (ex.message);
-    }
+  try {
+    yield xBus.unloadModule (resp, modNames);
+    resp.log.info (`module(s) ${modNames.join (', ')} successfully unloaded`);
+  } catch (ex) {
+    resp.log.warn (ex.stack);
   }
 
   resp.events.send ('bus.module.unload.finished');
 };
 
 cmds['module.reload'] = function* (msg, resp) {
-  const {file} = msg.data;
-  const files = getModuleFiles (file);
+  const {files} = msg.data;
+  const modFiles = !files.length ? getModuleFiles () : files;
 
-  for (const file of files) {
-    const filename = path.basename (file);
-    const dirname = path.dirname (file);
+  const dirname = path.dirname (modFiles[0]);
+  const filenames = modFiles.map (file => path.basename (file));
 
-    try {
-      yield xBus.reloadModule (resp, filename, dirname);
-      resp.log.info (`module ${filename} successfully reloaded`);
-    } catch (ex) {
-      resp.log.err (ex.message);
-    }
+  try {
+    yield xBus.reloadModule (resp, filenames, dirname);
+    resp.log.info (`module(s) ${filenames.join (', ')} successfully reloaded`);
+  } catch (ex) {
+    resp.log.err (ex.stack);
   }
 
   resp.events.send ('bus.module.reload.finished');
@@ -99,7 +94,8 @@ cmds['module.watch'] = function* (msg, resp, next) {
           }
 
           resp.log.info (`file ${location} has changed, reload...`);
-          resp.command.send ('bus.module.reload', {file}, () => {});
+          const modFiles = files.filter (file => file.startsWith (dirname));
+          resp.command.send ('bus.module.reload', {files: modFiles}, () => {});
         })
         .on ('ready', () => {
           watched[dirname].ready = true;
@@ -147,7 +143,7 @@ exports.xcraftCommands = function () {
         desc: 'load a module',
         options: {
           params: {
-            optional: 'file',
+            optional: 'files...',
           },
         },
       },
@@ -156,7 +152,7 @@ exports.xcraftCommands = function () {
         desc: 'unload a module',
         options: {
           params: {
-            optional: 'name',
+            optional: 'names...',
           },
         },
       },
@@ -165,7 +161,7 @@ exports.xcraftCommands = function () {
         desc: 'reload a module',
         options: {
           params: {
-            optional: 'file',
+            optional: 'files...',
           },
         },
       },
