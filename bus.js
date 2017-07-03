@@ -29,7 +29,7 @@ cmds['module.load'] = function* (msg, resp) {
     resp.log.warn (ex.stack);
   }
 
-  resp.events.send ('bus.module.load.finished');
+  resp.events.send (`bus.module.load.${msg.id}.finished`);
 };
 
 cmds['module.unload'] = function* (msg, resp) {
@@ -43,7 +43,7 @@ cmds['module.unload'] = function* (msg, resp) {
     resp.log.warn (ex.stack);
   }
 
-  resp.events.send ('bus.module.unload.finished');
+  resp.events.send (`bus.module.unload.${msg.id}.finished`);
 };
 
 cmds['module.reload'] = function* (msg, resp) {
@@ -60,7 +60,7 @@ cmds['module.reload'] = function* (msg, resp) {
     resp.log.err (ex.stack);
   }
 
-  resp.events.send ('bus.module.reload.finished');
+  resp.events.send (`bus.module.reload.${msg.id}.finished`);
 };
 
 cmds['module.watch'] = function* (msg, resp, next) {
@@ -112,7 +112,7 @@ cmds['module.watch'] = function* (msg, resp, next) {
   yield next.sync ();
 
   resp.log.verb (`watched modules: ${Object.keys (watched).join (', ')}`);
-  resp.events.send ('bus.module.watch.finished');
+  resp.events.send (`bus.module.watch.${msg.id}.finished`);
 };
 
 cmds['module.unwatch'] = function (msg, resp) {
@@ -126,7 +126,7 @@ cmds['module.unwatch'] = function (msg, resp) {
   });
 
   resp.log.verb (`watched modules: ${Object.keys (watched).join (', ')}`);
-  resp.events.send ('bus.module.unwatch.finished');
+  resp.events.send (`bus.module.unwatch.${msg.id}.finished`);
 };
 
 /**
