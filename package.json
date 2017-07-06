@@ -29,7 +29,7 @@
     "chokidar": "^1.6.1",
     "clear-require": "^2.0.0",
     "watt": "^3.2.2",
-    "xcraft-core-activity": "^1.0.0",
+    "xcraft-core-activity": "^2.0.0",
     "xcraft-core-busclient": "^2.0.0",
     "xcraft-core-etc": "^1.2.0",
     "xcraft-core-fs": "^1.0.0",
