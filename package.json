@@ -25,17 +25,17 @@
     }
   },
   "dependencies": {
-    "axon": "^2.0.2",
-    "chokidar": "^1.6.1",
+    "axon": "^2.0.3",
+    "chokidar": "^1.7.0",
     "clear-require": "^2.0.0",
-    "watt": "^3.2.2",
-    "xcraft-core-activity": "^2.0.0",
-    "xcraft-core-busclient": "^2.0.0",
+    "watt": "^3.3.0",
+    "xcraft-core-activity": "^2.1.0",
+    "xcraft-core-busclient": "^2.1.0",
     "xcraft-core-etc": "^1.2.0",
-    "xcraft-core-fs": "^1.0.0",
+    "xcraft-core-fs": "^1.0.1",
     "xcraft-core-log": "^1.0.0",
-    "xcraft-core-transport": "^1.0.0",
-    "xcraft-core-utils": "^1.0.0"
+    "xcraft-core-transport": "^1.1.0",
+    "xcraft-core-utils": "^1.1.0"
   },
   "author": "Mathieu Schroeter & Samuel Loup",
   "license": "MIT",
