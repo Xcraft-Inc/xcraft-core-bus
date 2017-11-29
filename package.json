@@ -25,7 +25,7 @@
     }
   },
   "dependencies": {
-    "axon": "^2.0.3",
+    "axon": "Xcraft-Inc/axon",
     "chokidar": "^1.7.0",
     "clear-require": "^2.0.0",
     "watt": "^3.3.0",
