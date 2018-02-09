@@ -7,11 +7,11 @@ const cmds = {};
 const watched = {};
 
 function getModuleFiles (file) {
-  return file ? [file] : xBus.runningModuleLocations ();
+  return file ? [file] : xBus.runningModuleLocations (true);
 }
 
 function getModuleNames (name) {
-  return name ? [name] : xBus.runningModuleNames ();
+  return name ? [name] : xBus.runningModuleNames (true);
 }
 
 cmds['module.load'] = function* (msg, resp) {
