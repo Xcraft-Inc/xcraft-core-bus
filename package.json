@@ -37,6 +37,9 @@
     "xcraft-core-transport": "^1.1.0",
     "xcraft-core-utils": "^1.1.0"
   },
+  "optionalDependencies": {
+    "xcraft-core-horde": "^0.1.0"
+  },
   "author": "Mathieu Schroeter & Samuel Loup",
   "license": "MIT",
   "bugs": {
