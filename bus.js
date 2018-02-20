@@ -1,132 +1,132 @@
 'use strict';
 
-const path = require ('path');
-const xBus = require ('.');
+const path = require('path');
+const xBus = require('.');
 
 const cmds = {};
 const watched = {};
 
-function getModuleFiles (file) {
-  return file ? [file] : xBus.runningModuleLocations (true);
+function getModuleFiles(file) {
+  return file ? [file] : xBus.runningModuleLocations(true);
 }
 
-function getModuleNames (name) {
-  return name ? [name] : xBus.runningModuleNames (true);
+function getModuleNames(name) {
+  return name ? [name] : xBus.runningModuleNames(true);
 }
 
-cmds['module.load'] = function* (msg, resp) {
+cmds['module.load'] = function*(msg, resp) {
   const {files} = msg.data;
-  const modFiles = !files.length ? getModuleFiles () : files;
+  const modFiles = !files.length ? getModuleFiles() : files;
 
-  const dirname = path.dirname (modFiles[0]);
-  const filenames = modFiles.map (file => path.basename (file));
+  const dirname = path.dirname(modFiles[0]);
+  const filenames = modFiles.map(file => path.basename(file));
 
   //READ DEF: FIND HOT
   try {
-    yield xBus.loadModule (resp, filenames, dirname, false);
-    resp.log.info (`module(s) ${filenames.join (', ')} successfully loaded`);
+    yield xBus.loadModule(resp, filenames, dirname, false);
+    resp.log.info(`module(s) ${filenames.join(', ')} successfully loaded`);
   } catch (ex) {
-    resp.log.warn (ex.stack);
+    resp.log.warn(ex.stack);
   }
 
-  resp.events.send (`bus.module.load.${msg.id}.finished`);
+  resp.events.send(`bus.module.load.${msg.id}.finished`);
 };
 
-cmds['module.unload'] = function* (msg, resp) {
+cmds['module.unload'] = function*(msg, resp) {
   const {names} = msg.data;
-  const modNames = !names.length ? getModuleNames () : names;
+  const modNames = !names.length ? getModuleNames() : names;
 
   try {
-    yield xBus.unloadModule (resp, modNames);
-    resp.log.info (`module(s) ${modNames.join (', ')} successfully unloaded`);
+    yield xBus.unloadModule(resp, modNames);
+    resp.log.info(`module(s) ${modNames.join(', ')} successfully unloaded`);
   } catch (ex) {
-    resp.log.warn (ex.stack);
+    resp.log.warn(ex.stack);
   }
 
-  resp.events.send (`bus.module.unload.${msg.id}.finished`);
+  resp.events.send(`bus.module.unload.${msg.id}.finished`);
 };
 
-cmds['module.reload'] = function* (msg, resp) {
+cmds['module.reload'] = function*(msg, resp) {
   const {files} = msg.data;
-  const modFiles = !files.length ? getModuleFiles () : files;
+  const modFiles = !files.length ? getModuleFiles() : files;
 
-  const dirname = path.dirname (modFiles[0]);
-  const filenames = modFiles.map (file => path.basename (file));
+  const dirname = path.dirname(modFiles[0]);
+  const filenames = modFiles.map(file => path.basename(file));
 
   try {
-    yield xBus.reloadModule (resp, filenames, dirname);
-    resp.log.info (`module(s) ${filenames.join (', ')} successfully reloaded`);
+    yield xBus.reloadModule(resp, filenames, dirname);
+    resp.log.info(`module(s) ${filenames.join(', ')} successfully reloaded`);
   } catch (ex) {
-    resp.log.err (ex.stack);
+    resp.log.err(ex.stack);
   }
 
-  resp.events.send (`bus.module.reload.${msg.id}.finished`);
+  resp.events.send(`bus.module.reload.${msg.id}.finished`);
 };
 
-cmds['module.watch'] = function* (msg, resp, next) {
-  const chokidar = require ('chokidar');
+cmds['module.watch'] = function*(msg, resp, next) {
+  const chokidar = require('chokidar');
   const {file} = msg.data;
-  const files = getModuleFiles (file);
+  const files = getModuleFiles(file);
 
-  const dirList = new Set ();
+  const dirList = new Set();
 
   for (const file of files) {
-    const dirname = path.dirname (file);
+    const dirname = path.dirname(file);
 
-    if (dirList.has (dirname)) {
+    if (dirList.has(dirname)) {
       continue;
     }
 
-    dirList.add (dirname);
+    dirList.add(dirname);
 
     if (watched[dirname]) {
-      watched[dirname].handle.close ();
+      watched[dirname].handle.close();
     }
 
-    const _next = next.parallel ();
+    const _next = next.parallel();
 
     watched[dirname] = {
       handle: chokidar
-        .watch (dirname)
-        .on ('all', (event, location) => {
+        .watch(dirname)
+        .on('all', (event, location) => {
           if (!watched[dirname].ready) {
             return;
           }
 
-          resp.log.info (`file ${location} has changed, reload...`);
-          const modFiles = files.filter (file => file.startsWith (dirname));
-          resp.command.send ('bus.module.reload', {files: modFiles}, () => {});
+          resp.log.info(`file ${location} has changed, reload...`);
+          const modFiles = files.filter(file => file.startsWith(dirname));
+          resp.command.send('bus.module.reload', {files: modFiles}, () => {});
         })
-        .on ('ready', () => {
+        .on('ready', () => {
           watched[dirname].ready = true;
-          _next ();
+          _next();
         })
-        .on ('error', err => {
-          resp.log.err (err);
-          _next (err);
+        .on('error', err => {
+          resp.log.err(err);
+          _next(err);
         }),
       ready: false,
     };
   }
 
-  yield next.sync ();
+  yield next.sync();
 
-  resp.log.verb (`watched modules: ${Object.keys (watched).join (', ')}`);
-  resp.events.send (`bus.module.watch.${msg.id}.finished`);
+  resp.log.verb(`watched modules: ${Object.keys(watched).join(', ')}`);
+  resp.events.send(`bus.module.watch.${msg.id}.finished`);
 };
 
-cmds['module.unwatch'] = function (msg, resp) {
+cmds['module.unwatch'] = function(msg, resp) {
   const {file} = msg.data;
-  const dirnames = getModuleFiles (file).map (file => path.dirname (file));
+  const dirnames = getModuleFiles(file).map(file => path.dirname(file));
 
-  dirnames.filter (dirname => !!watched[dirname]).forEach (dirname => {
-    resp.log.info (`stop watching for ${dirname}`);
-    watched[dirname].handle.close ();
+  dirnames.filter(dirname => !!watched[dirname]).forEach(dirname => {
+    resp.log.info(`stop watching for ${dirname}`);
+    watched[dirname].handle.close();
     delete watched[dirname];
   });
 
-  resp.log.verb (`watched modules: ${Object.keys (watched).join (', ')}`);
-  resp.events.send (`bus.module.unwatch.${msg.id}.finished`);
+  resp.log.verb(`watched modules: ${Object.keys(watched).join(', ')}`);
+  resp.events.send(`bus.module.unwatch.${msg.id}.finished`);
 };
 
 /**
@@ -134,7 +134,7 @@ cmds['module.unwatch'] = function (msg, resp) {
  *
  * @returns {Object} The list and definitions of commands.
  */
-exports.xcraftCommands = function () {
+exports.xcraftCommands = function() {
   return {
     handlers: cmds,
     rc: {

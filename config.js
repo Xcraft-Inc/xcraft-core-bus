@@ -14,8 +14,8 @@ module.exports = [
     type: 'input',
     name: 'commanderPort',
     message: 'commander port',
-    validate: function (value) {
-      return /^[0-9]{1,}$/.test (value);
+    validate: function(value) {
+      return /^[0-9]{1,}$/.test(value);
     },
     default: '9100',
   },
@@ -23,8 +23,8 @@ module.exports = [
     type: 'input',
     name: 'notifierPort',
     message: 'notifier port',
-    validate: function (value) {
-      return /^[0-9]{1,}$/.test (value);
+    validate: function(value) {
+      return /^[0-9]{1,}$/.test(value);
     },
     default: '9300',
   },
