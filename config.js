@@ -14,7 +14,7 @@ module.exports = [
     type: 'input',
     name: 'commanderHost',
     message: 'hostname or IP',
-    default: '127.0.0.1',
+    default: '',
   },
   {
     type: 'input',
@@ -29,7 +29,7 @@ module.exports = [
     type: 'input',
     name: 'notifierHost',
     message: 'hostname or IP',
-    default: '127.0.0.1',
+    default: '',
   },
   {
     type: 'input',
