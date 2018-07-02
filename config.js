@@ -12,12 +12,24 @@ module.exports = [
   },
   {
     type: 'input',
+    name: 'commanderHost',
+    message: 'hostname or IP',
+    default: '127.0.0.1',
+  },
+  {
+    type: 'input',
     name: 'commanderPort',
     message: 'commander port',
     validate: function(value) {
       return /^[0-9]{1,}$/.test(value);
     },
     default: '9100',
+  },
+  {
+    type: 'input',
+    name: 'notifierHost',
+    message: 'hostname or IP',
+    default: '127.0.0.1',
   },
   {
     type: 'input',
