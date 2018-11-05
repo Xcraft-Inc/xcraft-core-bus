@@ -28,7 +28,7 @@
     "xcraft-axon": "^2.0.4",
     "chokidar": "^1.7.0",
     "clear-require": "^2.0.0",
-    "gigawatts": "^4.0.0",
+    "gigawatts": "^4.0.1",
     "xcraft-core-activity": "^2.1.0",
     "xcraft-core-busclient": "^2.1.0",
     "xcraft-core-etc": "^1.2.0",
