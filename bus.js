@@ -119,11 +119,13 @@ cmds['module.unwatch'] = function(msg, resp) {
   const {file} = msg.data;
   const dirnames = getModuleFiles(file).map(file => path.dirname(file));
 
-  dirnames.filter(dirname => !!watched[dirname]).forEach(dirname => {
-    resp.log.info(`stop watching for ${dirname}`);
-    watched[dirname].handle.close();
-    delete watched[dirname];
-  });
+  dirnames
+    .filter(dirname => !!watched[dirname])
+    .forEach(dirname => {
+      resp.log.info(`stop watching for ${dirname}`);
+      watched[dirname].handle.close();
+      delete watched[dirname];
+    });
 
   resp.log.verb(`watched modules: ${Object.keys(watched).join(', ')}`);
   resp.events.send(`bus.module.unwatch.${msg.id}.finished`);
