@@ -23,7 +23,7 @@ cmds['module.load'] = function*(msg, resp) {
 
   //READ DEF: FIND HOT
   try {
-    yield xBus.loadModule(resp, filenames, dirname, false);
+    yield xBus.loadModule(resp, filenames, dirname, {});
     resp.log.info(`module(s) ${filenames.join(', ')} successfully loaded`);
   } catch (ex) {
     resp.log.warn(ex.stack);
