@@ -15,15 +15,16 @@ function getModuleNames(name) {
 }
 
 cmds['module.load'] = function*(msg, resp) {
-  const {files} = msg.data;
-  const modFiles = !files.length ? getModuleFiles() : files;
+  const xFs = require('xcraft-core-fs');
 
-  const dirname = path.dirname(modFiles[0]);
-  const filenames = modFiles.map(file => path.basename(file));
+  const {moduleName} = msg.data;
+
+  const moduleInfo = xBus.getModuleInfo(moduleName);
+  const filenames = xFs.ls(moduleInfo.path, moduleInfo.pattern);
 
   //READ DEF: FIND HOT
   try {
-    yield xBus.loadModule(resp, filenames, dirname, {});
+    yield xBus.loadModule(resp, filenames, moduleInfo.path, {});
     resp.log.info(`module(s) ${filenames.join(', ')} successfully loaded`);
   } catch (ex) {
     resp.log.warn(ex.stack);
@@ -145,7 +146,7 @@ exports.xcraftCommands = function() {
         desc: 'load a module',
         options: {
           params: {
-            optional: 'files...',
+            required: 'moduleName',
           },
         },
       },
