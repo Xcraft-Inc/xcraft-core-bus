@@ -1,4 +1,3 @@
-
 # xcraft-core-bus
 
 Manage the command and events bus lifecycle and operations.
