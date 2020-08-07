@@ -29,16 +29,16 @@
     "chokidar": "^2.1.5",
     "clear-require": "^2.0.0",
     "gigawatts": "^4.0.1",
-    "xcraft-core-activity": "^2.1.0",
-    "xcraft-core-busclient": "^3.0.0",
-    "xcraft-core-etc": "^2.0.0",
-    "xcraft-core-fs": "^2.0.0",
-    "xcraft-core-log": "^1.0.0",
-    "xcraft-core-transport": "^2.0.0",
-    "xcraft-core-utils": "^2.0.0"
+    "xcraft-core-activity": "^2.2.0",
+    "xcraft-core-busclient": "^4.0.0",
+    "xcraft-core-etc": "^2.0.4",
+    "xcraft-core-fs": "^2.1.0",
+    "xcraft-core-log": "^1.3.0",
+    "xcraft-core-transport": "^3.0.0",
+    "xcraft-core-utils": "^3.0.0"
   },
   "optionalDependencies": {
-    "xcraft-core-horde": "^1.0.0"
+    "xcraft-core-horde": "^2.0.0"
   },
   "author": "Mathieu Schroeter & Samuel Loup",
   "license": "MIT",
