@@ -1,6 +1,6 @@
 {
   "name": "xcraft-core-bus",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Xcraft bus",
   "main": "lib/index.js",
   "engines": {
