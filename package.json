@@ -38,7 +38,8 @@
     "xcraft-core-utils": "^3.0.0"
   },
   "optionalDependencies": {
-    "xcraft-core-horde": "^2.0.0"
+    "xcraft-core-horde": "^2.0.0",
+    "xcraft-core-host": "^2.3.0"
   },
   "author": "Mathieu Schroeter & Samuel Loup",
   "license": "MIT",
