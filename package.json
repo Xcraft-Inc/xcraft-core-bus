@@ -27,7 +27,7 @@
   "dependencies": {
     "xcraft-axon": "^2.1.0",
     "chokidar": "^2.1.5",
-    "clear-require": "^2.0.0",
+    "clear-module": "^4.1.1",
     "gigawatts": "^4.0.1",
     "xcraft-core-activity": "^3.0.0",
     "xcraft-core-busclient": "^4.0.0",
