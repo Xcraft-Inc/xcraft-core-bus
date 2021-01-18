@@ -40,4 +40,10 @@ module.exports = [
     },
     default: '9300',
   },
+  {
+    type: 'confirm',
+    name: 'acceptIncoming',
+    message: 'enable new connections immediately',
+    default: true,
+  },
 ];
