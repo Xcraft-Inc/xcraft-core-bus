@@ -6,6 +6,15 @@ const xBus = require('.');
 const cmds = {};
 const watched = {};
 
+let appId = '$';
+try {
+  appId = require('xcraft-core-host').appId;
+} catch (ex) {
+  if (ex.code !== 'MODULE_NOT_FOUND') {
+    throw ex;
+  }
+}
+
 function getModuleFiles(file) {
   return file ? [file] : xBus.runningModuleLocations(true);
 }
@@ -132,7 +141,9 @@ cmds['module.unwatch'] = function (msg, resp) {
   resp.events.send(`bus.module.unwatch.${msg.id}.finished`);
 };
 
-cmds.xcraftMetrics = function* (msg, resp, next) {
+const xcraftMetrics = `${appId}.xcraftMetrics`;
+
+cmds[xcraftMetrics] = function* (msg, resp, next) {
   const metrics = {};
   try {
     if (msg.data.from === 'bus') {
@@ -148,7 +159,7 @@ cmds.xcraftMetrics = function* (msg, resp, next) {
       Object.assign(metrics, _metrics.data);
     }
   } finally {
-    resp.events.send(`bus.xcraftMetrics.${msg.id}.finished`, metrics);
+    resp.events.send(`bus.${xcraftMetrics}.${msg.id}.finished`, metrics);
   }
 };
 
@@ -206,7 +217,7 @@ exports.xcraftCommands = function () {
           },
         },
       },
-      'xcraftMetrics': {
+      [xcraftMetrics]: {
         parallel: true,
         desc: 'extract all Xcraft metrics',
       },
