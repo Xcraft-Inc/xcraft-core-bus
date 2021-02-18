@@ -132,6 +132,26 @@ cmds['module.unwatch'] = function (msg, resp) {
   resp.events.send(`bus.module.unwatch.${msg.id}.finished`);
 };
 
+cmds.xcraftMetrics = function* (msg, resp, next) {
+  const metrics = {};
+  try {
+    if (msg.data.from === 'bus') {
+      return {};
+    }
+
+    const registry = xBus.getRegistry();
+    const metricsCommands = Object.keys(registry).filter((cmd) =>
+      cmd.endsWith('.xcraftMetrics')
+    );
+    for (const cmd of metricsCommands) {
+      const _metrics = yield resp.command.send(cmd, {from: 'bus'}, next);
+      Object.assign(metrics, _metrics.data);
+    }
+  } finally {
+    resp.events.send(`bus.xcraftMetrics.${msg.id}.finished`, metrics);
+  }
+};
+
 /**
  * Retrieve the list of available commands.
  *
@@ -185,6 +205,10 @@ exports.xcraftCommands = function () {
             optional: 'file',
           },
         },
+      },
+      'xcraftMetrics': {
+        parallel: true,
+        desc: 'extract all Xcraft metrics',
       },
     },
   };
