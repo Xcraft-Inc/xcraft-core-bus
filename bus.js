@@ -150,6 +150,7 @@ cmds[xcraftMetrics] = function* (msg, resp, next) {
       return {};
     }
 
+    console.time(`xcraftMetrics ${msg.id}`);
     const registry = xBus.getRegistry();
     const metricsCommands = Object.keys(registry).filter((cmd) =>
       cmd.endsWith('.xcraftMetrics')
@@ -159,6 +160,7 @@ cmds[xcraftMetrics] = function* (msg, resp, next) {
       Object.assign(metrics, _metrics.data);
     }
   } finally {
+    console.timeEnd(`xcraftMetrics ${msg.id}`);
     resp.events.send(`bus.${xcraftMetrics}.${msg.id}.finished`, metrics);
   }
 };
