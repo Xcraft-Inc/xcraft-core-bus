@@ -144,12 +144,13 @@ cmds['module.unwatch'] = function (msg, resp) {
 const xcraftMetrics = `${appId}.xcraftMetrics`;
 
 cmds[xcraftMetrics] = function* (msg, resp, next) {
+  if (msg.data.from === 'bus') {
+    resp.events.send(`bus.${xcraftMetrics}.${msg.id}.finished`, metrics);
+    return;
+  }
+
   const metrics = {};
   try {
-    if (msg.data.from === 'bus') {
-      return {};
-    }
-
     console.time(`xcraftMetrics ${msg.id}`);
     const registry = xBus.getRegistry();
     const metricsCommands = Object.keys(registry).filter((cmd) =>
