@@ -145,7 +145,7 @@ const xcraftMetrics = `${appId}.xcraftMetrics`;
 
 cmds[xcraftMetrics] = function* (msg, resp, next) {
   if (msg.data.from === 'bus') {
-    resp.events.send(`bus.${xcraftMetrics}.${msg.id}.finished`, metrics);
+    resp.events.send(`bus.${xcraftMetrics}.${msg.id}.finished`);
     return;
   }
 
