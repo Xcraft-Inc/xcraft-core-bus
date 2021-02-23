@@ -41,6 +41,12 @@ module.exports = [
     default: '9300',
   },
   {
+    type: 'input',
+    name: 'timeout',
+    message: 'TCP timeout',
+    default: 0
+  },
+  {
     type: 'confirm',
     name: 'acceptIncoming',
     message: 'enable new connections immediately',
