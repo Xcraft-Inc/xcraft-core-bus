@@ -141,6 +141,93 @@ cmds['module.unwatch'] = function (msg, resp) {
   resp.events.send(`bus.module.unwatch.${msg.id}.finished`);
 };
 
+cmds.xcraftMetrics = function (msg, resp) {
+  const v8 = require('v8');
+  const process = require('process');
+  const os = require('os');
+  const metrics = {};
+
+  try {
+    let stats;
+
+    /************************************************************************/
+
+    stats = v8.getHeapStatistics();
+    metrics[`v8.heap.total`] = stats.total_heap_size;
+    metrics[`v8.heap.executable.total`] = stats.total_heap_size_executable;
+    metrics[`v8.heap.physical.total`] = stats.total_physical_size;
+    metrics[`v8.heap.available.total`] = stats.total_available_size;
+    metrics[`v8.heap.used.total`] = stats.used_heap_size;
+    metrics[`v8.heap.limit.total`] = stats.heap_size_limit;
+    metrics[`v8.heap.malloced.total`] = stats.malloced_memory;
+    metrics[`v8.heap.malloced.peak.total`] = stats.peak_malloced_memory;
+    metrics[`v8.heap.nativeContexts.total`] =
+      stats.number_of_native_contexts; /* If it increases over time, it's a memory leak */
+    metrics[`v8.heap.detachedContexts.total`] =
+      stats.number_of_detached_contexts; /* Potential memory leak */
+
+    /************************************************************************/
+
+    stats = v8.getHeapCodeStatistics();
+    metrics[`v8.heap.codeMetadata.total`] = stats.code_and_metadata_size;
+    metrics[`v8.heap.bytecodeMetadata.total`] =
+      stats.bytecode_and_metadata_size;
+    metrics[`v8.heap.scriptSource.total`] = stats.external_script_source_size;
+
+    /************************************************************************/
+
+    stats = process.cpuUsage();
+    metrics[`process.cpuUsage.user.total`] = stats.user; /* us */
+    metrics[`process.cpuUsage.system.total`] = stats.system; /* us */
+
+    /************************************************************************/
+
+    stats = process.memoryUsage();
+    metrics[`process.memory.rss.total`] = stats.rss; /* c++ + js */
+    metrics[`process.memory.heap.total`] = stats.heapTotal; /* v8, see above */
+    metrics[`process.memory.heapUsed.total`] =
+      stats.heapUsed; /* v8, see above */
+    metrics[`process.memory.external.total`] =
+      stats.external; /* c++ objects managed by v8 */
+    metrics[`process.memory.arrayBuffers.total`] =
+      stats.arrayBuffers; /* node js Buffers */
+
+    /************************************************************************/
+
+    stats = process.resourceUsage();
+    metrics[`process.maxrss.total`] = stats.maxRSS; /* KB */
+    metrics[`process.ixrss.total`] = stats.sharedMemorySize; /* KB */
+    metrics[`process.idrss.total`] = stats.unsharedDataSize; /* KB */
+    metrics[`process.isrss.total`] = stats.unsharedStackSize; /* KB */
+    metrics[`process.pageFault.minor.total`] = stats.minorPageFault;
+    metrics[`process.pageFault.major.total`] = stats.majorPageFault;
+    metrics[`process.swappedOut.total`] = stats.swappedOut;
+    metrics[`process.fs.read.total`] = stats.fsRead;
+    metrics[`process.fs.write.total`] = stats.fsWrite;
+    metrics[`process.ipc.sent.total`] = stats.ipcSent;
+    metrics[`process.ipc.received.total`] = stats.ipcReceived;
+    metrics[`process.signalsCount.total`] = stats.signalsCount;
+    metrics[`process.contextSwitches.voluntary.total`] =
+      stats.voluntaryContextSwitches;
+    metrics[`process.contextSwitches.involuntary.total`] =
+      stats.involuntaryContextSwitches;
+
+    /************************************************************************/
+
+    metrics[`process.uptime.total`] = process.uptime(); /* sec */
+
+    /************************************************************************/
+
+    metrics[`os.process.priority.total`] = os.getPriority();
+    metrics[`os.memory.total`] = os.totalmem();
+    metrics[`os.uptime.total`] = os.uptime();
+
+    /************************************************************************/
+  } finally {
+    resp.events.send(`bus.xcraftMetrics.${msg.id}.finished`, metrics);
+  }
+};
+
 const xcraftMetrics = `${appId}.xcraftMetrics`;
 
 cmds[xcraftMetrics] = function* (msg, resp, next) {
@@ -217,6 +304,10 @@ exports.xcraftCommands = function () {
             optional: 'file',
           },
         },
+      },
+      'xcraftMetrics': {
+        parallel: true,
+        desc: 'extract server Xcraft metrics',
       },
       [xcraftMetrics]: {
         parallel: true,
