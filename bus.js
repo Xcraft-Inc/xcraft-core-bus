@@ -149,78 +149,82 @@ cmds.xcraftMetrics = function (msg, resp) {
 
   try {
     let stats;
+    const ns = `${os.hostname()}.${appId}`;
 
     /************************************************************************/
 
     stats = v8.getHeapStatistics();
-    metrics[`v8.heap.total`] = stats.total_heap_size;
-    metrics[`v8.heap.executable.total`] = stats.total_heap_size_executable;
-    metrics[`v8.heap.physical.total`] = stats.total_physical_size;
-    metrics[`v8.heap.available.total`] = stats.total_available_size;
-    metrics[`v8.heap.used.total`] = stats.used_heap_size;
-    metrics[`v8.heap.limit.total`] = stats.heap_size_limit;
-    metrics[`v8.heap.malloced.total`] = stats.malloced_memory;
-    metrics[`v8.heap.malloced.peak.total`] = stats.peak_malloced_memory;
-    metrics[`v8.heap.nativeContexts.total`] =
+    metrics[`${ns}.v8.heap.total`] = stats.total_heap_size;
+    metrics[`${ns}.v8.heap.executable.total`] =
+      stats.total_heap_size_executable;
+    metrics[`${ns}.v8.heap.physical.total`] = stats.total_physical_size;
+    metrics[`${ns}.v8.heap.available.total`] = stats.total_available_size;
+    metrics[`${ns}.v8.heap.used.total`] = stats.used_heap_size;
+    metrics[`${ns}.v8.heap.limit.total`] = stats.heap_size_limit;
+    metrics[`${ns}.v8.heap.malloced.total`] = stats.malloced_memory;
+    metrics[`${ns}.v8.heap.malloced.peak.total`] = stats.peak_malloced_memory;
+    metrics[`${ns}.v8.heap.nativeContexts.total`] =
       stats.number_of_native_contexts; /* If it increases over time, it's a memory leak */
-    metrics[`v8.heap.detachedContexts.total`] =
+    metrics[`${ns}.v8.heap.detachedContexts.total`] =
       stats.number_of_detached_contexts; /* Potential memory leak */
 
     /************************************************************************/
 
     stats = v8.getHeapCodeStatistics();
-    metrics[`v8.heap.codeMetadata.total`] = stats.code_and_metadata_size;
-    metrics[`v8.heap.bytecodeMetadata.total`] =
+    metrics[`${ns}.v8.heap.codeMetadata.total`] = stats.code_and_metadata_size;
+    metrics[`${ns}.v8.heap.bytecodeMetadata.total`] =
       stats.bytecode_and_metadata_size;
-    metrics[`v8.heap.scriptSource.total`] = stats.external_script_source_size;
+    metrics[`${ns}.v8.heap.scriptSource.total`] =
+      stats.external_script_source_size;
 
     /************************************************************************/
 
     stats = process.cpuUsage();
-    metrics[`process.cpuUsage.user.total`] = stats.user; /* us */
-    metrics[`process.cpuUsage.system.total`] = stats.system; /* us */
+    metrics[`${ns}.process.cpuUsage.user.total`] = stats.user; /* us */
+    metrics[`${ns}.process.cpuUsage.system.total`] = stats.system; /* us */
 
     /************************************************************************/
 
     stats = process.memoryUsage();
-    metrics[`process.memory.rss.total`] = stats.rss; /* c++ + js */
-    metrics[`process.memory.heap.total`] = stats.heapTotal; /* v8, see above */
-    metrics[`process.memory.heapUsed.total`] =
+    metrics[`${ns}.process.memory.rss.total`] = stats.rss; /* c++ + js */
+    metrics[`${ns}.process.memory.heap.total`] =
+      stats.heapTotal; /* v8, see above */
+    metrics[`${ns}.process.memory.heapUsed.total`] =
       stats.heapUsed; /* v8, see above */
-    metrics[`process.memory.external.total`] =
+    metrics[`${ns}.process.memory.external.total`] =
       stats.external; /* c++ objects managed by v8 */
-    metrics[`process.memory.arrayBuffers.total`] =
+    metrics[`${ns}.process.memory.arrayBuffers.total`] =
       stats.arrayBuffers; /* node js Buffers */
 
     /************************************************************************/
 
     stats = process.resourceUsage();
-    metrics[`process.maxrss.total`] = stats.maxRSS; /* KB */
-    metrics[`process.ixrss.total`] = stats.sharedMemorySize; /* KB */
-    metrics[`process.idrss.total`] = stats.unsharedDataSize; /* KB */
-    metrics[`process.isrss.total`] = stats.unsharedStackSize; /* KB */
-    metrics[`process.pageFault.minor.total`] = stats.minorPageFault;
-    metrics[`process.pageFault.major.total`] = stats.majorPageFault;
-    metrics[`process.swappedOut.total`] = stats.swappedOut;
-    metrics[`process.fs.read.total`] = stats.fsRead;
-    metrics[`process.fs.write.total`] = stats.fsWrite;
-    metrics[`process.ipc.sent.total`] = stats.ipcSent;
-    metrics[`process.ipc.received.total`] = stats.ipcReceived;
-    metrics[`process.signalsCount.total`] = stats.signalsCount;
-    metrics[`process.contextSwitches.voluntary.total`] =
+    metrics[`${ns}.process.maxrss.total`] = stats.maxRSS; /* KB */
+    metrics[`${ns}.process.ixrss.total`] = stats.sharedMemorySize; /* KB */
+    metrics[`${ns}.process.idrss.total`] = stats.unsharedDataSize; /* KB */
+    metrics[`${ns}.process.isrss.total`] = stats.unsharedStackSize; /* KB */
+    metrics[`${ns}.process.pageFault.minor.total`] = stats.minorPageFault;
+    metrics[`${ns}.process.pageFault.major.total`] = stats.majorPageFault;
+    metrics[`${ns}.process.swappedOut.total`] = stats.swappedOut;
+    metrics[`${ns}.process.fs.read.total`] = stats.fsRead;
+    metrics[`${ns}.process.fs.write.total`] = stats.fsWrite;
+    metrics[`${ns}.process.ipc.sent.total`] = stats.ipcSent;
+    metrics[`${ns}.process.ipc.received.total`] = stats.ipcReceived;
+    metrics[`${ns}.process.signalsCount.total`] = stats.signalsCount;
+    metrics[`${ns}.process.contextSwitches.voluntary.total`] =
       stats.voluntaryContextSwitches;
-    metrics[`process.contextSwitches.involuntary.total`] =
+    metrics[`${ns}.process.contextSwitches.involuntary.total`] =
       stats.involuntaryContextSwitches;
 
     /************************************************************************/
 
-    metrics[`process.uptime.total`] = process.uptime(); /* sec */
+    metrics[`${ns}.process.uptime.total`] = process.uptime(); /* sec */
 
     /************************************************************************/
 
-    metrics[`os.process.priority.total`] = os.getPriority();
-    metrics[`os.memory.total`] = os.totalmem();
-    metrics[`os.uptime.total`] = os.uptime();
+    metrics[`${ns}.os.process.priority.total`] = os.getPriority();
+    metrics[`${ns}.os.memory.total`] = os.totalmem();
+    metrics[`${ns}.os.uptime.total`] = os.uptime();
 
     /************************************************************************/
   } finally {
