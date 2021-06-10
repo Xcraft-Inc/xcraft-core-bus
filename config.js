@@ -44,7 +44,13 @@ module.exports = [
     type: 'input',
     name: 'timeout',
     message: 'TCP timeout',
-    default: 0
+    default: 0,
+  },
+  {
+    type: 'input',
+    name: 'unixSocketId',
+    message: 'used on *nix for axon bus sockets',
+    default: '',
   },
   {
     type: 'confirm',
