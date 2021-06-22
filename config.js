@@ -23,7 +23,7 @@ module.exports = [
     validate: function (value) {
       return /^[0-9]{1,}$/.test(value);
     },
-    default: '9100',
+    default: '35400',
   },
   {
     type: 'input',
@@ -38,7 +38,7 @@ module.exports = [
     validate: function (value) {
       return /^[0-9]{1,}$/.test(value);
     },
-    default: '9300',
+    default: '35800',
   },
   {
     type: 'input',
