@@ -58,4 +58,16 @@ module.exports = [
     message: 'enable new connections immediately',
     default: true,
   },
+  {
+    type: 'input',
+    name: 'keyPath',
+    message: 'path on a server key file (pem)',
+    default: '',
+  },
+  {
+    type: 'input',
+    name: 'certPath',
+    message: 'path on a server certificate file (pem)',
+    default: '',
+  },
 ];
