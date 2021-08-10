@@ -47,6 +47,12 @@ module.exports = [
     default: 0,
   },
   {
+    type: 'confirm',
+    name: 'noTLS',
+    message: 'disable TLS',
+    default: false,
+  },
+  {
     type: 'input',
     name: 'unixSocketId',
     message: 'used on *nix for axon bus sockets',
