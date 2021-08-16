@@ -76,4 +76,11 @@ module.exports = [
     message: 'path on a server certificate file (pem)',
     default: '',
   },
+  {
+    type: 'checkbox',
+    name: 'tribes',
+    message: 'tribes to deploy multiple nodes',
+    choices: [],
+    default: [],
+  },
 ];
