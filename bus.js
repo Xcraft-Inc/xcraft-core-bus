@@ -7,13 +7,18 @@ const cmds = {};
 const watched = {};
 
 let appId = '$';
+let tribe = '';
 try {
-  appId = require('xcraft-core-host').appId;
+  const xHost = require('xcraft-core-host');
+  appId = xHost.appId;
+  tribe = xHost.appArgs().tribe ? `-${xHost.appArgs().tribe}` : '';
 } catch (ex) {
   if (ex.code !== 'MODULE_NOT_FOUND') {
     throw ex;
   }
 }
+
+const cmdNamespace = `${appId}${tribe}`;
 
 function getModuleFiles(file) {
   return file ? [file] : xBus.runningModuleLocations(true);
@@ -149,7 +154,7 @@ cmds.xcraftMetrics = function (msg, resp) {
 
   try {
     let stats;
-    const ns = `${os.hostname()}.${appId}`;
+    const ns = `${os.hostname()}.${cmdNamespace}`;
 
     /************************************************************************/
 
@@ -232,22 +237,33 @@ cmds.xcraftMetrics = function (msg, resp) {
   }
 };
 
-const xcraftMetrics = `${appId}.xcraftMetrics`;
+const xcraftMetrics = `${cmdNamespace}.xcraftMetrics`;
 
 cmds[xcraftMetrics] = function* (msg, resp, next) {
-  if (msg.data.from === 'bus') {
+  if (msg.data.from === `bus-${cmdNamespace}`) {
     resp.events.send(`bus.${xcraftMetrics}.${msg.id}.finished`);
     return;
   }
 
+  let full = false;
+  if (msg.data.from === 'garona') {
+    full = true;
+  }
+
   const metrics = {};
   try {
-    const registry = xBus.getRegistry();
+    const registry = full
+      ? xBus.getCommander().getFullRegistry()
+      : xBus.getRegistry();
     const metricsCommands = Object.keys(registry).filter((cmd) =>
       cmd.endsWith('.xcraftMetrics')
     );
     for (const cmd of metricsCommands) {
-      const _metrics = yield resp.command.send(cmd, {from: 'bus'}, next);
+      const _metrics = yield resp.command.send(
+        cmd,
+        {from: `bus-${cmdNamespace}`},
+        next
+      );
       Object.assign(metrics, _metrics.data);
     }
   } finally {
