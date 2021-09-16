@@ -77,6 +77,12 @@ module.exports = [
     default: '',
   },
   {
+    type: 'input',
+    name: 'policiesPath',
+    message: 'security policies file (json)',
+    default: '',
+  },
+  {
     type: 'checkbox',
     name: 'tribes',
     message: 'tribes to deploy multiple nodes',
