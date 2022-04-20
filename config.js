@@ -65,6 +65,12 @@ module.exports = [
     default: true,
   },
   {
+    type: 'confirm',
+    name: 'forceStop',
+    message: 'stop remote hordes',
+    default: false,
+  },
+  {
     type: 'input',
     name: 'keyPath',
     message: 'path on a server key file (pem)',
