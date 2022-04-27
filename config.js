@@ -66,8 +66,8 @@ module.exports = [
   },
   {
     type: 'confirm',
-    name: 'forceStop',
-    message: 'stop remote hordes',
+    name: 'shutdownRemotes',
+    message: 'shutdown remote hordes',
     default: false,
   },
   {
