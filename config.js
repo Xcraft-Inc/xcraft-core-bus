@@ -47,6 +47,18 @@ module.exports = [
     default: 0,
   },
   {
+    type: 'input',
+    name: 'serverKeepAlive',
+    message: 'keep-alive for onconnect (server) connections on the server',
+    default: 15000,
+  },
+  {
+    type: 'input',
+    name: 'clientKeepAlive',
+    message: 'keep-alive for connect (client) connections to the server',
+    default: 6000,
+  },
+  {
     type: 'confirm',
     name: 'noTLS',
     message: 'disable TLS',
