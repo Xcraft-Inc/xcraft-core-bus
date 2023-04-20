@@ -107,4 +107,11 @@ module.exports = [
     choices: [],
     default: [],
   },
+  {
+    type: 'confirm',
+    name: 'horde.passive',
+    message:
+      'commands are never forwarded to the hordes (events are received as usual)',
+    default: false,
+  },
 ];
