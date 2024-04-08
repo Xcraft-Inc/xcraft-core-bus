@@ -46,37 +46,6 @@ cmds['module.load'] = function* (msg, resp) {
   resp.events.send(`bus.module.load.${msg.id}.finished`);
 };
 
-cmds['module.unload'] = function* (msg, resp) {
-  const {names} = msg.data;
-  const modNames = !names.length ? getModuleNames() : names;
-
-  try {
-    yield xBus.unloadModule(resp, modNames);
-    resp.log.info(`module(s) ${modNames.join(', ')} successfully unloaded`);
-  } catch (ex) {
-    resp.log.warn(ex.stack);
-  }
-
-  resp.events.send(`bus.module.unload.${msg.id}.finished`);
-};
-
-cmds['module.reload'] = function* (msg, resp) {
-  const {files} = msg.data;
-  const modFiles = !files.length ? getModuleFiles() : files;
-
-  const dirname = path.dirname(modFiles[0]);
-  const filenames = modFiles.map((file) => path.basename(file));
-
-  try {
-    yield xBus.reloadModule(resp, filenames, dirname);
-    resp.log.info(`module(s) ${filenames.join(', ')} successfully reloaded`);
-  } catch (ex) {
-    resp.log.err(ex.stack);
-  }
-
-  resp.events.send(`bus.module.reload.${msg.id}.finished`);
-};
-
 cmds.xcraftMetrics = function (msg, resp) {
   const v8 = require('v8');
   const process = require('process');
@@ -217,24 +186,6 @@ exports.xcraftCommands = function () {
         options: {
           params: {
             required: 'moduleName',
-          },
-        },
-      },
-      'module.unload': {
-        parallel: false,
-        desc: 'unload a module',
-        options: {
-          params: {
-            optional: 'names...',
-          },
-        },
-      },
-      'module.reload': {
-        parallel: false,
-        desc: 'reload a module',
-        options: {
-          params: {
-            optional: 'files...',
           },
         },
       },
