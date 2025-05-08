@@ -1,6 +1,5 @@
 'use strict';
 
-const path = require('path');
 const xBus = require('.');
 
 const cmds = {};
@@ -18,14 +17,6 @@ try {
 }
 
 const cmdNamespace = `${appId}${tribe}`;
-
-function getModuleFiles(file) {
-  return file ? [file] : xBus.runningModuleLocations(true);
-}
-
-function getModuleNames(name) {
-  return name ? [name] : xBus.runningModuleNames(true);
-}
 
 cmds['module.load'] = function* (msg, resp) {
   const xFs = require('xcraft-core-fs');
