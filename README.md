@@ -1,4 +1,4 @@
-# 📘 Documentation du module xcraft-core-bus
+# 📘 xcraft-core-bus
 
 ## Aperçu
 
