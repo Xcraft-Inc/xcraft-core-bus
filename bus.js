@@ -37,6 +37,30 @@ cmds['module.load'] = function* (msg, resp) {
   resp.events.send(`bus.module.load.${msg.id}.finished`);
 };
 
+const heapdump = `${cmdNamespace}.heapdump`;
+
+cmds[heapdump] = async function (msg, resp) {
+  try {
+    const {mkdtemp} = require('node:fs/promises');
+    const {join} = require('node:path');
+    const {tmpdir} = require('node:os');
+    const {writeHeapSnapshot} = require('node:v8');
+
+    const output = await mkdtemp(join(tmpdir(), 'heap-'));
+    const snapshot = join(output, `heapdump.${cmdNamespace}.heapsnapshot`);
+    resp.log.dbg('Heap snapshot output: ', snapshot);
+
+    writeHeapSnapshot(snapshot);
+    resp.events.send(`bus.${heapdump}.${msg.id}.finished`, snapshot);
+  } catch (ex) {
+    resp.events.send(`bus.${heapdump}.${msg.id}.error`, {
+      code: ex.code,
+      message: ex.message,
+      stack: ex.stack,
+    });
+  }
+};
+
 cmds.xcraftMetrics = function (msg, resp) {
   const v8 = require('v8');
   const process = require('process');
@@ -179,6 +203,10 @@ exports.xcraftCommands = function () {
             required: 'moduleName',
           },
         },
+      },
+      [heapdump]: {
+        parallel: true,
+        desc: 'dump the server v8 heap',
       },
       'xcraftMetrics': {
         parallel: true,
