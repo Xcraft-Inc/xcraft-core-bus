@@ -37,6 +37,7 @@
     "xcraft-core-utils": "^4.0.0"
   },
   "optionalDependencies": {
+    "koffi": "^2.15.1",
     "xcraft-core-horde": "^3.0.0"
   },
   "author": "Epsitec SA",

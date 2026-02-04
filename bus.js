@@ -61,6 +61,32 @@ cmds[heapdump] = async function (msg, resp) {
   }
 };
 
+const malloctrim = `${cmdNamespace}.malloctrim`;
+
+cmds[malloctrim] = async function (msg, resp) {
+  try {
+    if (process.platform !== 'linux') {
+      throw new Error(`malloc-trim is only supported on Linux with the glibc`);
+    }
+
+    const koffi = require('koffi');
+    const libc = koffi.load('libc.so.6');
+    const mallocTrim = libc.func('malloc_trim', 'int', ['size_t']);
+
+    const freed = mallocTrim(0);
+    resp.events.send(
+      `bus.${malloctrim}.${msg.id}.finished`,
+      `Heap is ${freed ? 'freed' : 'not freed'}`
+    );
+  } catch (ex) {
+    resp.events.send(`bus.${malloctrim}.${msg.id}.error`, {
+      code: ex.code,
+      message: ex.message,
+      stack: ex.stack,
+    });
+  }
+};
+
 cmds.xcraftMetrics = function (msg, resp) {
   const v8 = require('v8');
   const process = require('process');
@@ -207,6 +233,10 @@ exports.xcraftCommands = function () {
       [heapdump]: {
         parallel: true,
         desc: 'dump the server v8 heap',
+      },
+      [malloctrim]: {
+        parallel: true,
+        desc: 'try to release free memory at the top of the heap',
       },
       'xcraftMetrics': {
         parallel: true,
