@@ -31,14 +31,14 @@
     "xcraft-core-busclient": "^5.0.0",
     "xcraft-core-etc": "^3.0.0",
     "xcraft-core-fs": "^2.1.0",
+    "xcraft-core-horde": "^3.6.0",
     "xcraft-core-host": "^3.7.0",
     "xcraft-core-log": "^2.2.0",
     "xcraft-core-transport": "^4.0.0",
     "xcraft-core-utils": "^4.0.0"
   },
   "optionalDependencies": {
-    "koffi": "^2.15.1",
-    "xcraft-core-horde": "^3.0.0"
+    "koffi": "^2.15.1"
   },
   "author": "Epsitec SA",
   "contributors": [
